@@ -1,0 +1,22 @@
+Basic:
+ ☐ coordinates from center
+ ☐ window creation function
+ ☐ scene manager
+ ☐ texture and image cache
+ ☐ deck cache
+ ☐ texture packer loader
+ ☐ group object
+ ☐ input manager
+
+Gui:
+ ☐ button
+ ☐ scroll view (different layer? or both?)
+ ☐ panel
+ ☐ 
+
+
+
+
+TODO (future):
+ ☐ Nine image deck from sprite sheet
+ ☐ 

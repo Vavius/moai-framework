@@ -1,0 +1,32 @@
+Higher-level MOAI Lua framework 
+
+Features: 
+1) Resource cache: textures, fonts, sprite atlases 
+2) Factory functions for frequently used objects: sprite, textbox, layer 
+3) Helpers for lightweight Lua classes - allow to create objects with (), all functions are stored once in a metatable 
+4) Lua extensions like utf8 strings, table enhancements, math 
+5) Scene management 
+6) Touch dispatcher 
+
+*) Transitions library? 
+
+
+
+
+Rig: lua table with metaTable that contain methods
+
+
+
+-----------------------------------
+- MOAI Built-in Classes Extensions: 
+-----------------------------------
+
+MOAIProp:
+    setParent ( MOAIProp )
+    setLayer ( MOAILayer )
+    setTexture ( MOAITexture | string | MOAIImage | MOAIDataBuffer )
+
+
+
+InitializeViewport()
+
