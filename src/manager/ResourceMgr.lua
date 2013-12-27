@@ -60,6 +60,8 @@ function _createFont(path)
     font:load(path)
     
     font.path = path
+    
+    return font
 end
 
 ---
@@ -144,7 +146,9 @@ function ResourceMgr:getFont(path)
 
     local cache = self.fontCache
     path = self:getResourceFilePath(path)
-    
+
+    assert(path, "Font not found: " .. path)
+
     if cache[path] == nil then
         local font = _createFont(path)
         cache[path] = font

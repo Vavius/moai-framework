@@ -4,7 +4,7 @@
 --
 --------------------------------------------------------------------------------
 
-local Group = require("scene.Group")
+local Group = require("display.Group")
 local UIObjectBase = require("gui.UIObjectBase")
 local UIEvent = require("gui.UIEvent")
 local Event = require("event.Event")
@@ -63,8 +63,10 @@ function Button:setNormalSprite(sprite)
         self.normalSprite = nil
     end
 
-    self:addChild(sprite)
-    self.normalSprite = sprite
+    if sprite then
+        self:addChild(sprite)
+        self.normalSprite = sprite
+    end
 end
 
 ---
@@ -76,8 +78,10 @@ function Button:setSelectedSprite(sprite)
         self.selectedSprite = nil
     end
 
-    self:addChild(sprite)
-    self.selectedSprite = sprite
+    if sprite then
+        self:addChild(sprite)
+        self.selectedSprite = sprite
+    end
 end
 
 ---
@@ -105,7 +109,7 @@ function Button:setLabel(label)
     end
 
     if label then
-        self:addChild(label)
+        self:addChild(label, #self.children + 1)
         self.label = label
         label:setLoc(self.textOffsetX, self.textOffsetY)
     end

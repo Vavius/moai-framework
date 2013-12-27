@@ -45,8 +45,8 @@ end
 -- @param scene filename
 function SceneMgr:pushScene(sceneName, params)
     local sceneClass = require(sceneName)
-    local scene = sceneClass()
-    self:internalOpenScene(scene, params, true)
+    local scene = sceneClass(params)
+    self:internalOpenScene(scene, params, false)
 end
 
 ---
@@ -54,7 +54,7 @@ end
 -- @param scene filename
 function SceneMgr:replaceScene(sceneName, params)
     local sceneClass = require(sceneName)
-    local scene = sceneClass()
+    local scene = sceneClass(params)
     self:internalOpenScene(scene, params, true)
 end
 
@@ -72,26 +72,6 @@ end
 function SceneMgr:popToRootScene(params)
 
     self:closeScene(params, #self.scenes - 1)
-end
-
-
----
--- Goes to a new scene.
--- Will close the current scene.
--- @param sceneName module name of the Scene
--- @param params (option)Parameters of the Scene
-function SceneMgr:gotoScene(scene, params)
-
-    self:internalOpenScene(scene, params, true)
-end
-
----
--- Open the Scene.
--- @param sceneName module name of the Scene
--- @param params (option)Parameters of the Scene
-function SceneMgr:openScene(scene, params)
-
-    self:internalOpenScene(scene, params, false)
 end
 
 ---
@@ -132,12 +112,12 @@ function SceneMgr:internalOpenScene(scene, params, currentCloseFlag)
         self.currentScene:start(params)
     end
 
-    local animation = params.animation
+    local animation = params.transition
 
     if animation then
         Executors.callOnce(
         function()
-            animation(self.currentScene or Scene(), self.nextScene, params)
+            animation(self.currentScene or Scene(), self.nextScene)
             onTransitionFinished()
         end
         )
@@ -197,12 +177,12 @@ function SceneMgr:closeScene(params, backCount)
         end
     end
 
-    local animation = params.animation
+    local animation = params.transition
 
     if animation then
         Executors.callOnce(
         function()
-            local animation = params.animation
+            local animation = params.transition
             animation(self.closingSceneGroup, self.nextScene or Scene(), params)
             onTransitionFinished()
         end
@@ -214,12 +194,12 @@ end
 
 function SceneMgr:addScene(scene)
     table.insertIfAbsent(self.scenes, scene)
-    table.insertIfAbsent(self.renderTable, scene.children)
+    table.insertIfAbsent(self.renderTable, scene.layers)
 end
 
 function SceneMgr:removeScene(scene)
     table.removeElement(self.scenes, scene)
-    table.removeElement(self.renderTable, scene.children)
+    table.removeElement(self.renderTable, scene.layers)
 end
 
 ---

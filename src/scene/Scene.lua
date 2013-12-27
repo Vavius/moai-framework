@@ -5,7 +5,7 @@
 ---------------------------------------------------------------------------------
 
 local Display           = require("Display")
-local Group             = require("scene.Group")
+local Group             = require("display.Group")
 local Event             = require("event.Event")
 local EventDispatcher   = require("event.EventDispatcher")
 
@@ -16,10 +16,11 @@ Scene.TOUCH_EVENT = Event()
 
 ---
 -- The constructor.
-function Scene:init()
+function Scene:init(params)
     EventDispatcher.init(self)
     Group.init(self, nil, Display.screenWidth, Display.screenHeight)
 
+    self.layers = {}
     self.isScene = true
     self.opened = false
     self.started = false
@@ -43,6 +44,15 @@ function Scene:open(params)
 
     self:dispatchEvent(Event.WILL_ENTER, params)
     self.opened = true
+end
+
+function Scene:addLayer(layer)
+    if table.insertIfAbsent(self.layers, layer) then
+        layer:setParent(self)
+
+        return true
+    end
+    return false
 end
 
 ---
@@ -92,8 +102,8 @@ end
 -- @param e Event
 function Scene:onTouch(e)
     local e2 = table.merge(Scene.TOUCH_EVENT, e)
-    for i = #self.children, 1, -1 do
-        local layer = self.children[i]
+    for i = #self.layers, 1, -1 do
+        local layer = self.layers[i]
         if layer.touchEnabled and layer:getVisible() then
             e2.wx, e2.wy = layer:wndToWorld(e.x, e.y, 0)
             layer:dispatchEvent(e2)

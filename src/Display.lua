@@ -6,8 +6,10 @@
 
 local Display = {}
 
-local Group = require("scene.Group")
-local Layer = require("scene.Layer")
+local Label = require("display.Label")
+local Group = require("display.Group")
+local Layer = require("display.Layer")
+local PropertyUtils = require("util.PropertyUtils")
 
 -- forward declarations
 local cacheSpriteFrames
@@ -82,7 +84,18 @@ end
 -- @param   width       (option) image width
 -- @param   height      (option) image height
 function Display.Sprite(fileName, width, height)
-    
+    local properties
+    if type(fileName) == 'table' then
+        properties = table.dup(fileName)
+        fileName = properties['name']
+        width = properties['width']
+        height = properties['height']
+
+        properties['name'] = nil
+        properties['width'] = nil
+        properties['height'] = nil
+    end
+
     local deck = ResourceMgr:getImageDeck(fileName, width, height)
     
     if not deck then
@@ -97,7 +110,44 @@ function Display.Sprite(fileName, width, height)
     sprite.deck = deck
     sprite:setIndexByName(fileName)
     
+    if properties then
+        PropertyUtils.setProperties(sprite, properties, true)
+    end
+
     return sprite
+end
+
+---
+-- Create text box
+-- @param str string
+-- @param 
+function Display.Label(str, width, height, fontName, fontSize, color)
+    local properties
+    if type(str) == 'table' then
+        properties = table.dup(str)
+        str = properties['text']
+        width = properties['width']
+        height = properties['height']
+        fontName = properties['fontName']
+        fontSize = properties['fontSize']
+
+        properties['text'] = nil
+        properties['width'] = nil
+        properties['height'] = nil
+        properties['fontName'] = nil
+        properties['fontSize'] = nil
+    end
+
+    local label = Label(str, width, height, fontName, fontSize)
+    if color then
+        label:setColor(unpack(color))
+    end
+
+    if properties then
+        PropertyUtils.setProperties(label, properties, true)
+    end
+
+    return label
 end
 
 Display.Group = Group

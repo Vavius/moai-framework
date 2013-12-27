@@ -21,7 +21,7 @@ function TestScene:init()
 
     layer = MOAILayer.new()
     layer:setViewport(Display.viewport)
-    self:addChild(layer)
+    self:addLayer(layer)
 
 
 

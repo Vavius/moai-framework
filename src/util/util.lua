@@ -102,6 +102,9 @@ function math.normalize( x, y )
     return x/d, y/d
 end
 
+function math.clamp(x, min, max)
+    return math.max(min, math.min(x, max))
+end
 
 
 --------------------------------------------------------------------------------

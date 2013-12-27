@@ -29,7 +29,6 @@ function AnimationBase:setButton(button)
     if not button then return end
 
     local addEventListener = function(event, callback)
-        print(callback)
         if self[callback] then
             button:addEventListener(event, self[callback], self)
         end
@@ -72,8 +71,6 @@ local ToggleFlip = class(AnimationBase)
 function Change:downAnimation(event)
     local button = event.target
     
-    print("Down animation")
-
     if button.normalSprite then
         button.normalSprite:setVisible(false)
     end

@@ -27,3 +27,9 @@ grp:addChild(btn)
 btn:setLoc(100, 0)
 
 grp:seekRot(0, 0, 90, 2)
+
+
+-- text, width, height, font, textSize
+local label = Display.Label("Test Label", 200, 50, "Verdana.ttf", 32)
+label:setLayer(layer)
+label:setLoc(0, 100, 0)
