@@ -11,7 +11,7 @@ local DEFAULT_WINDOW = {
     screenHeight = MOAIEnvironment.verticalResolution or 960,
     viewWidth = 320,
     viewHeight = 480,
-    scale = "letterbox",
+    scaleMode = "letterbox",
     viewOffset = {0, 0},
 }
 
@@ -39,9 +39,9 @@ function App:openWindow(title, windowParams)
     self.screenWidth = windowParams.screenWidth
     self.screenHeight = windowParams.screenHeight
     
-    self:updateVieport(params)
+    self:updateVieport(windowParams)
 
-    MOAISim.openWindow(title, screenWidth, screenHeight)
+    MOAISim.openWindow(title, self.screenWidth, self.screenHeight)
 end
 
 --- 
