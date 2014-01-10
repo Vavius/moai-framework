@@ -19,6 +19,7 @@ Event.TOUCH_MOVE    = "touchMove"
 Event.TOUCH_CANCEL  = "touchCancel"
 Event.KEY_DOWN      = "keyDown"
 Event.KEY_UP        = "keyUp"
+Event.RESIZE        = "resize"
 
 ---
 -- Event's constructor.
