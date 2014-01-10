@@ -4,7 +4,7 @@
 --
 ---------------------------------------------------------------------------------
 
-local Display           = require("Display")
+local App               = require("display.App")
 local Group             = require("display.Group")
 local Event             = require("event.Event")
 local EventDispatcher   = require("event.EventDispatcher")
@@ -18,7 +18,7 @@ Scene.TOUCH_EVENT = Event()
 -- The constructor.
 function Scene:init(params)
     EventDispatcher.init(self)
-    Group.init(self, nil, Display.screenWidth, Display.screenHeight)
+    Group.init(self, nil, App.screenWidth, App.screenHeight)
 
     self.layers = {}
     self.isScene = true
@@ -41,7 +41,7 @@ function Scene:open(params)
     if self.opened then
         return
     end
-
+    
     self:dispatchEvent(Event.WILL_ENTER, params)
     self.opened = true
 end

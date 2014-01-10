@@ -8,7 +8,6 @@ local EventDispatcher = require("event.EventDispatcher")
 
 local SceneMgr = EventDispatcher()
 
-local Display           = require("Display")
 local RenderMgr         = require("manager.RenderMgr")
 local InputMgr          = require("manager.InputMgr")
 local Event             = require("event.Event")

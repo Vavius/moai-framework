@@ -39,7 +39,9 @@ function TestScene:init(params)
         end,
         layer = layer,
     }
-    
+
+
+
     -- grp:seekRot(0, 0, 90, 2)
 end
 

@@ -4,6 +4,7 @@
 --
 --------------------------------------------------------------------------------
 
+local App = require("display.App")
 local Event = require("event.Event")
 local EventDispatcher = require("event.EventDispatcher")
 
@@ -20,7 +21,7 @@ Layer.__moai_class = MOAILayer
 function Layer:init(viewport)
     EventDispatcher.init(self)
 
-    self:setViewport(viewport or Display.viewport)
+    self:setViewport(viewport or App.viewport)
     self.touchEnabled = false
     self.touchHandler = nil
 end

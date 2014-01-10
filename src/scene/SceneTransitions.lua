@@ -4,7 +4,7 @@
 --
 --------------------------------------------------------------------------------
 
-local Display = require("Display")
+local App = require("display.App")
 
 local SceneTransitions = {}
 
@@ -86,7 +86,7 @@ SceneTransitions.fromRight = function(params)
     return function(sceneOut, sceneIn)
         local duration = params.duration or 0.5
         local easeType = params.easeType
-        local sw, sh = Display.screenWidth, Display.screenHeight
+        local sw, sh = App.screenWidth, App.screenHeight
 
         sceneIn:setVisible(true)
         sceneIn:setLoc(sw, 0)
@@ -103,7 +103,7 @@ SceneTransitions.fromLeft = function(params)
     return function(sceneOut, sceneIn)
         local duration = params.duration or 0.5
         local easeType = params.easeType
-        local sw, sh = Display.screenWidth, Display.screenHeight
+        local sw, sh = App.screenWidth, App.screenHeight
 
         sceneIn:setVisible(true)
         sceneIn:setLoc(-sw, 0)
@@ -120,7 +120,7 @@ SceneTransitions.fromTop = function(params)
     return function(sceneOut, sceneIn)
         local duration = params.duration or 0.5
         local easeType = params.easeType
-        local sw, sh = Display.screenWidth, Display.screenHeight
+        local sw, sh = App.screenWidth, App.screenHeight
 
         sceneIn:setVisible(true)
         sceneIn:setLoc(0, -sh)
@@ -137,7 +137,7 @@ SceneTransitions.fromBottom = function(params)
     return function(sceneOut, sceneIn)
         local duration = params.duration or 0.5
         local easeType = params.easeType
-        local sw, sh = Display.screenWidth, Display.screenHeight
+        local sw, sh = App.screenWidth, App.screenHeight
 
         sceneIn:setVisible(true)
         sceneIn:setLoc(0, sh)
@@ -154,7 +154,7 @@ SceneTransitions.slideRight = function(params)
     return function(sceneOut, sceneIn)
         local duration = params.duration or 0.5
         local easeType = params.easeType
-        local sw, sh = Display.screenWidth, Display.screenHeight
+        local sw, sh = App.screenWidth, App.screenHeight
 
         sceneIn:setVisible(true)
         sceneIn:setLoc(-sw, 0)
@@ -173,7 +173,7 @@ SceneTransitions.slideLeft = function(params)
     return function(sceneOut, sceneIn)
         local duration = params.duration or 0.5
         local easeType = params.easeType
-        local sw, sh = Display.screenWidth, Display.screenHeight
+        local sw, sh = App.screenWidth, App.screenHeight
 
         sceneIn:setVisible(true)
         sceneIn:setLoc(sw, 0)
@@ -192,7 +192,7 @@ SceneTransitions.slideTop = function(params)
     return function(sceneOut, sceneIn)
         local duration = params.duration or 0.5
         local easeType = params.easeType
-        local sw, sh = Display.screenWidth, Display.screenHeight
+        local sw, sh = App.screenWidth, App.screenHeight
 
         sceneIn:setVisible(true)
         sceneIn:setLoc(0, sh)
@@ -211,7 +211,7 @@ SceneTransitions.slideBottom = function(params)
     return function(sceneOut, sceneIn)
         local duration = params.duration or 0.5
         local easeType = params.easeType
-        local sw, sh = Display.screenWidth, Display.screenHeight
+        local sw, sh = App.screenWidth, App.screenHeight
 
         sceneIn:setVisible(true)
         sceneIn:setLoc(0, -sh)

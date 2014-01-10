@@ -48,12 +48,12 @@ end
 function AnimationBase:removeButton(button)
     if not self.button then return end
 
-    button:removeEventListener ( UIEvent.DOWN,      downAnimation, self )
-    button:removeEventListener ( UIEvent.UP,        upAnimation, self )
-    button:removeEventListener ( UIEvent.CANCEL,    cancelAnimation, self )
-    button:removeEventListener ( UIEvent.CLICK,     clickAnimation, self )
-    button:removeEventListener ( UIEvent.ENABLE,   enabledAnimation, self )
-    button:removeEventListener ( UIEvent.DISABLE,  disabledAnimation, self )
+    button:removeEventListener ( UIEvent.DOWN,     "downAnimation", self )
+    button:removeEventListener ( UIEvent.UP,       "upAnimation", self )
+    button:removeEventListener ( UIEvent.CANCEL,   "cancelAnimation", self )
+    button:removeEventListener ( UIEvent.CLICK,    "clickAnimation", self )
+    button:removeEventListener ( UIEvent.ENABLE,   "enabledAnimation", self )
+    button:removeEventListener ( UIEvent.DISABLE,  "disabledAnimation", self )
     self.button = nil
 end
 
@@ -71,25 +71,20 @@ local ToggleFlip = class(AnimationBase)
 function Change:downAnimation(event)
     local button = event.target
     
-    if button.normalSprite then
-        button.normalSprite:setVisible(false)
-    end
-    
     if button.selectedSprite then
         button.selectedSprite:setVisible(true)
-    end
+        button.normalSprite:setVisible(false)
 
-    if button.disabledSprite then
-        button.disabledSprite:setVisible(false)
+        if button.disabledSprite then
+            button.disabledSprite:setVisible(false)
+        end
     end
 end
 
 function Change:upAnimation(event)
     local button = event.target
 
-    if button.normalSprite then
-        button.normalSprite:setVisible(true)
-    end
+    button.normalSprite:setVisible(true)
     
     if button.selectedSprite then
         button.selectedSprite:setVisible(false)
@@ -103,16 +98,13 @@ end
 function Change:disabledAnimation(event)
     local button = event.target
 
-    if button.normalSprite then
-        button.normalSprite:setVisible(false)
-    end
-    
-    if button.selectedSprite then
-        button.selectedSprite:setVisible(false)
-    end
-
     if button.disabledSprite then
         button.disabledSprite:setVisible(true)
+        button.normalSprite:setVisible(false)
+    
+        if button.selectedSprite then
+            button.selectedSprite:setVisible(false)
+        end
     end
 end
 

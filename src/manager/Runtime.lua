@@ -23,8 +23,6 @@ end
 
 -- view resize
 function Runtime.onResize(width, height)
-    -- M.updateDisplaySize(width, height)
-    
     local e = Event(Event.RESIZE)
     e.width = width
     e.height = height

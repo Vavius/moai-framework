@@ -3,6 +3,7 @@
 require("util.MOAIExtensions")
 require("util.util")
 
+App         = require("display.App")
 Display     = require("Display")
 Executors   = require("util.Executors")
 Runtime     = require("manager.Runtime")
@@ -12,4 +13,4 @@ RenderMgr   = require("manager.RenderMgr")
 InputMgr    = require("manager.InputMgr")
 Event       = require("event.Event")
 EventDispatcher = require("event.EventDispatcher")
-Gui         = require("Gui")
+Gui         = require("gui.include")

@@ -4,6 +4,8 @@
 --
 --------------------------------------------------------------------------------
 
+local App = require("display.App")
+
 local Label = class()
 local MOAITextBoxInterface = MOAITextBox.getInterfaceTable()
 Label.__index = MOAITextBoxInterface
@@ -31,12 +33,13 @@ Label.DEFAULT_POINTS = 24
 -- @param font (option) Font path, or Font object
 -- @param textSize (option) TextSize
 function Label:init(text, width, height, font, textSize)
-    self.contentScale = Display:getContentScale() or 1
+    self.contentScale = App:getContentScale() or 1
     self.textSize = textSize or self.DEFAULT_POINTS
 
     font = ResourceMgr:getFont(font)
 
     self:setFont(font)
+    self.font = font
     self:setYFlip(true)
     self:setSize(width or 10, height or 10)
     self:setTextSize(self.textSize)

@@ -5,9 +5,9 @@
 --------------------------------------------------------------------------------
 
 local Group = require("display.Group")
-local UIObjectBase = require("gui.UIObjectBase")
-local UIEvent = require("gui.UIEvent")
 local Event = require("event.Event")
+local UIEvent = require("gui.UIEvent")
+local UIObjectBase = require("gui.UIObjectBase")
 local ButtonAnimations = require("gui.ButtonAnimations")
 
 local Button = class(UIObjectBase, Group)
@@ -24,9 +24,13 @@ local Button = class(UIObjectBase, Group)
 --     onClick = function(e) print("click") end,
 --     animations = {ButtonAnimations.Bounce()},
 --     toggle = false,
---     textOffset = {10, 10},
 -- }
 
+
+Button.propertyOrder = {
+    label = 2,
+    layer = 3,
+}
 
 function Button:init(params)
     Group.init(self)
@@ -40,10 +44,10 @@ function Button:init(params)
     self:setEnabled(true)
     self:setSelected(false)
 
-    if self.normalSprite then
-        local w, h = self.normalSprite:getDims()
-        self:setSize(w, h)
-    end
+    assert(self.normalSprite, "Button: normal sprite is not set")
+
+    local w, h = self.normalSprite:getDims()
+    self:setSize(w, h)
 end
 
 
@@ -109,9 +113,8 @@ function Button:setLabel(label)
     end
 
     if label then
-        self:addChild(label, #self.children + 1)
+        self:addChild(label)
         self.label = label
-        label:setLoc(self.textOffsetX, self.textOffsetY)
     end
 end
 
@@ -184,18 +187,6 @@ end
 -- 
 function Button:removeAnimation(animation)
     self.animations[animation]:setButton(nil)
-end
-
----
--- 
--- 
-function Button:setTextOffset(x, y)
-    self.textOffsetX = x
-    self.textOffsetY = y
-    
-    if self.label then
-        label:setLoc(x, y, 0)
-    end
 end
 
 ---

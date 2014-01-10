@@ -6,7 +6,7 @@
 
 local ResourceMgr = { }
 
-local Display = require("Display")
+local App = require("display.App")
 
 local _createTexture
 local _createFont
@@ -94,7 +94,7 @@ function ResourceMgr:getResourceFilePath(fileName)
         return fileName, 1
     end
 
-    local scaleFactor = Display:getContentScale() or 1
+    local scaleFactor = App:getContentScale() or 1
     for i, pathInfo in ipairs(self.resourceDirectories) do
         if pathInfo.threshold <= scaleFactor then
             local filePath = pathInfo.path .. "/" .. fileName
