@@ -5,7 +5,6 @@
 -- @author vavius <Vasiliy Yanushevich>
 --------------------------------------------------------------------------------
 
-local lfs = require("lfs")
 local socket = require("socket")
 local ltn12 = require "ltn12"
 
@@ -15,25 +14,22 @@ local DATA_PORT_START = 51198
 local MAGIC_HEADER = "MOAI_REMOTE:"
 local PING = MAGIC_HEADER.."PING"
 local PONG = MAGIC_HEADER.."PONG:"
-local LAUNCH = MAGIC_HEADER.."LAUNCH"
 local UPDATE = MAGIC_HEADER.."UPDATE:"
-
-local lastTimeStamps = { }
-local address
-
-local workingDir
+local UPDATE_SUCCESS = MAGIC_HEADER.."UPDATE_SUCCESS:"
+local RESTART = MAGIC_HEADER.."RESTART"
 
 local sendFile
 local onFileChanged
-local checkDirectory
+local search
 
 local dataPort = DATA_PORT_START
 
 
 -- Listen and find available deployment devices on local network that run liveReload app
 -- returns ip address
-local function search(timeout)
+function search(timeout)
     local deviceList = {}
+    timeout = timeout or 2
     local sock = assert(socket.udp())
     assert(sock:settimeout(timeout))
     assert(sock:setoption("broadcast", true))
@@ -42,6 +38,7 @@ local function search(timeout)
         local data, ip, port = sock:receivefrom()
         if data then
             if data:sub(1, #PONG) == PONG then
+                print("Pong", ip)
                 deviceList[#deviceList + 1] = {ip = ip, name = data:sub(#PONG + 1)}
             end
         else
@@ -52,18 +49,15 @@ local function search(timeout)
     return deviceList
 end
 
-function sendFile(path, attempts)
+function sendFile(workingDir, path, address, attempts)
     attempts = attempts or 3
     if attempts < 0 then
         return
     end
 
-    local localPath = lfs.currentdir() .. '/' .. path
+    print('changed', path)
 
-    localPath = localPath:sub(1 + #workingDir)
-    print('changed', localPath)
-
-    local file = assert(io.open(path, "rb"))
+    local file = assert(io.open(workingDir .. path, "rb"))
     local cmdSock = assert(socket.udp())
     local dataSock = assert(socket.tcp())
 
@@ -73,7 +67,7 @@ function sendFile(path, attempts)
     dataSock:bind("*", dataPort)
     assert(dataSock:listen(1))
     
-    tryCmd(cmdSock:sendto(UPDATE .. dataPort .. localPath, address, PORT))
+    tryCmd(cmdSock:sendto(UPDATE .. dataPort .. path, address, PORT))
 
     local client, err = dataSock:accept()
 
@@ -85,9 +79,9 @@ function sendFile(path, attempts)
         local sink = socket.sink("close-when-done", client)
         local source = ltn12.source.file(file)
         if ltn12.pump.all(source, sink) then
-            print('file sent successfully', localPath)
+            print('file sent successfully', path)
         else
-            print('error sending file', localPath)
+            print('error sending file', path)
             sendFile(path, attempts - 1)
         end
     end
@@ -95,8 +89,8 @@ function sendFile(path, attempts)
     cmdSock:close()
 end
 
-function onFileChanged(path)
-    sendFile(path, 5)
+function onFileChanged(workingDir, path, address)
+    sendFile(workingDir, path, address, 5)
 end
 
 -- Module

@@ -61,6 +61,7 @@ SceneTransitions.fadeOutIn = function(params)
         MOAICoroutine.blockOnAction(sceneIn:seekColor(1, 1, 1, 1, duration, easeType))
         
         sceneOut:setVisible(false)
+        sceneOut:setColor(1, 1, 1, 1)
     end
 end
 
@@ -78,6 +79,7 @@ SceneTransitions.crossfade = function(params)
         MOAICoroutine.blockOnAction(action1)
         
         sceneOut:setVisible(false)
+        sceneOut:setColor(1, 1, 1, 1)
     end
 end
 
@@ -164,6 +166,7 @@ SceneTransitions.slideRight = function(params)
         MOAICoroutine.blockOnAction(action1)
         
         sceneOut:setVisible(false)
+        sceneOut:setLoc(0, 0)
         sceneIn:setLoc(0, 0)
     end
 end
@@ -183,6 +186,7 @@ SceneTransitions.slideLeft = function(params)
         MOAICoroutine.blockOnAction(action1)
         
         sceneOut:setVisible(false)
+        sceneOut:setLoc(0, 0)
         sceneIn:setLoc(0, 0)
     end
 end
@@ -202,6 +206,7 @@ SceneTransitions.slideTop = function(params)
         MOAICoroutine.blockOnAction(action1)
         
         sceneOut:setVisible(false)
+        sceneOut:setLoc(0, 0)
         sceneIn:setLoc(0, 0)
     end
 end
@@ -221,6 +226,7 @@ SceneTransitions.slideBottom = function(params)
         MOAICoroutine.blockOnAction(action1)
         
         sceneOut:setVisible(false)
+        sceneOut:setLoc(0, 0)
         sceneIn:setLoc(0, 0)
     end
 end

@@ -5,11 +5,24 @@
 --------------------------------------------------------------------------------
 
 local ResourceMgr = require("manager.ResourceMgr")
-
+local SceneMgr = require("manager.SceneMgr")
 
 if MOAIEnvironment.documentDirectory then
-    package.path = MOAIEnvironment.documentDirectory .. '/?.lua;' .. package.path
+    package.path = MOAIEnvironment.documentDirectory .. '/live_update/?.lua;' .. package.path
+
+    -- resource directories are sorted in descending order by scale threshold 
+    -- here we increase threshold slightly to force lookup of live_update assets before the main assets
+    local newResources = {}
+    for k, v in pairs(ResourceMgr.resourceDirectories) do
+        local path = MOAIEnvironment.documentDirectory .. "/live_update/" .. v.path 
+        newResources[#newResources+1] = {path, v.scale, v.threshold + 0.001}
+    end
+
+    for k, v in pairs(newResources) do
+        ResourceMgr:addResourceDirectory(unpack(v))
+    end
 end
+
 
 local socket = require "socket"
 local ltn12 = require "ltn12"
@@ -19,74 +32,54 @@ local PING = MAGIC_HEADER.."PING"
 local PONG = MAGIC_HEADER.."PONG:"
 local UPDATE = MAGIC_HEADER.."UPDATE:"
 local UPDATE_SUCCESS = MAGIC_HEADER.."UPDATE_SUCCESS:"
+local RESTART = MAGIC_HEADER.."RESTART"
 
 local IMAGE_EXTENSIONS = {[".jpg"] = true, [".png"] = true}
 local LUA_EXTENSIONS = {[".lua"] = true}
 
-
-_G.liveReloadOverrides = {}
-
 ---
 -- If reloaded file is currently running scene - then restart it
-local function restartScene(luaFilePath)
-
+-- Files with scenes determined by their directory
+local function restartScene(requirePath)
+    local scenesDir = "scenes."
+    if requirePath:sub(1, #scenesDir) == scenesDir and SceneMgr.currentScene.name == requirePath then
+        SceneMgr:replaceScene(requirePath)
+    end
 end
 
 ---
 -- Reload texture in the cache
 -- Also assign it to all Decks that use this texture
 local function reloadTexture(texturePath)
-
-end
-
-_require = require
-function require(file)
-    print('calling new require', file)
-    if _G.liveReloadOverrides and _G.liveReloadOverrides[file] then
-        return _require(_G.liveReloadOverrides[file])
-    else
-        return _require(file)
+    local filepath = ResourceMgr:getResourceFilePath(texturePath)
+    local texture = ResourceMgr.textureCache[filepath]
+    if texture then
+        texture:load(filepath)
     end
 end
 
-local function table_deepCopy(src, dest)
-    dest = dest or {}
-    for k, v in pairs(src) do
-        if type(v) == "table" then
-            dest[k] = table_deepCopy(v)
-        else
-            dest[k] = v
-        end
-    end
-    return dest
-end
-
-local function table_removeAllElements(t)
-    for k, v in pairs(t) do 
-        t[k] = nil 
-    end
-end
-
-local function reloadPackage(path, absPath)
-    if package.loaded[path] then
-        table_removeAllElements(package.loaded[path])
-        local newTable = dofile(absPath)
-        table_deepCopy(newTable, package.loaded[path])
-    else
-        _require(path)
-    end
-end
-
-local function updateFile(fullPath, relPath)
+local function updateFile(relPath)
     local requirePath
     local ext = string.sub(relPath, -4)
     if LUA_EXTENSIONS[ext] then
         requirePath = string.gsub(relPath, ".lua", "")
         requirePath = string.gsub(requirePath, "/", ".")
-        _G.liveReloadOverrides[requirePath] = 'live_update.' .. requirePath
-        reloadPackage(_G.liveReloadOverrides[requirePath], fullPath)
+        package.loaded[requirePath] = nil
+
+        -- check if file is parsable
+        local status = xpcall(function() 
+                require(requirePath)
+            end,
+            function(err) print(err) print(debug.traceback()) end
+        )
+        if status then
+            restartScene(requirePath)
+        end
     end
 
+    if IMAGE_EXTENSIONS[ext] then
+        reloadTexture(relPath)
+    end
 end
 
 local function getPath(str,sep)
@@ -94,15 +87,18 @@ local function getPath(str,sep)
     return str:match(".*"..sep)
 end
 
+local M = {}
+
 local function runnerFunc()
     local sock = assert(socket.udp())
     assert(sock:setsockname("*", PORT))
     assert(sock:settimeout(0))
+    M.socket = sock
     while true do
         local data, ip, port = sock:receivefrom()
         if data then
             if data:sub(1, #PING) == PING then
-                local name = MOAIEnvironment.devModel or "unknown device"
+                local name = MOAIEnvironment.devName or "unknown device"
                 sock:sendto(PONG .. name, ip, port)
 
             elseif data:sub(1, #UPDATE) == UPDATE then
@@ -122,18 +118,36 @@ local function runnerFunc()
 
                 dataSock:close()
 
+                updateFile(archivePath, localPath)
                 sock:sendTo(UPDATE_SUCCESS .. localPath, ip, port)
-
-                local success, result = xpcall(function()
-                        updateFile(archivePath, localPath)
-                    end,
-                    function(err) return debug.traceback(err) end)
-                if not success then
-                    print(result)
-                end
             end
         end
         coroutine.yield()
     end
+    M.socket = nil
     sock:close()
 end
+
+function M:start()
+    local runner = MOAICoroutine.new()
+    runner:run(runnerFunc)
+    self.runner = runner
+end
+
+function M:stop()
+    if self.runner then
+        self.runner:stop()
+        self.runner = nil
+        if self.socket then
+            self.socket:close()
+            self.socket = nil
+        end
+    end
+end
+
+function M:updateFile(localPath)
+    updateFile(localPath)
+end
+
+return M
+

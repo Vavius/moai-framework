@@ -35,7 +35,6 @@ function SceneMgr:initialize()
     InputMgr:addEventListener(Event.TOUCH_CANCEL, self.onTouch, self)
     Runtime:addEventListener(Event.ENTER_FRAME, self.onEnterFrame, self)
 
-
     RenderMgr:addChild(self.renderTable)
 end
 
@@ -45,6 +44,7 @@ end
 function SceneMgr:pushScene(sceneName, params)
     local sceneClass = require(sceneName)
     local scene = sceneClass(params)
+    scene.name = sceneName
     self:internalOpenScene(scene, params, false)
 end
 
@@ -54,6 +54,7 @@ end
 function SceneMgr:replaceScene(sceneName, params)
     local sceneClass = require(sceneName)
     local scene = sceneClass(params)
+    scene.name = sceneName
     self:internalOpenScene(scene, params, true)
 end
 
@@ -103,6 +104,7 @@ function SceneMgr:internalOpenScene(scene, params, currentCloseFlag)
     local function onTransitionFinished()
         if self.currentScene and currentCloseFlag then
             self.currentScene:close(params)
+            self:removeScene(self.currentScene)
         end
 
         self.currentScene = self.nextScene

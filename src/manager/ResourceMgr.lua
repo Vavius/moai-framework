@@ -112,27 +112,26 @@ end
 -- Loads (or obtains from its cache) a texture and returns it.
 -- Textures are cached.
 -- @param path The path of the texture
--- @param filter Texture filter.
 -- @return Texture instance
-function ResourceMgr:getTexture(path, filter)
+function ResourceMgr:getTexture(path)
     if type(path) == "userdata" then
         return path
     end
-
+    
     local cache = self.textureCache
     local filepath, scale = self:getResourceFilePath(path)
-
+    
     if not filepath then
         return nil
     end
-
-    local cacheKey = filepath .. "$" .. tostring(filter)
-    if cache[cacheKey] == nil then
-        local texture = _createTexture(filepath, filter)
+    
+    local texture = cache[filepath]
+    if texture == nil then
+        texture = _createTexture(filepath)
         texture.scale = scale
-        cache[cacheKey] = texture
+        cache[filepath] = texture
     end
-    return cache[cacheKey]
+    return texture
 end
 
 ---
