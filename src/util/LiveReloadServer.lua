@@ -73,7 +73,8 @@ function sendFile(workingDir, path, address, attempts)
 
     if client == nil then
         print('waiting for client failed: ' .. err)
-        sendFile(path, attempts - 1)
+        dataSock:close()
+        sendFile(workingDir, path, address, attempts - 1)
     else
         dataPort = dataPort + 1
         local sink = socket.sink("close-when-done", client)
@@ -82,14 +83,19 @@ function sendFile(workingDir, path, address, attempts)
             print('file sent successfully', path)
         else
             print('error sending file', path)
-            sendFile(path, attempts - 1)
+            dataSock:close()
+            sendFile(workingDir, path, address, attempts - 1)
         end
     end
-    
+
+    dataSock:close()
     cmdSock:close()
 end
 
 function onFileChanged(workingDir, path, address)
+    if not workingDir or not path or not address then
+        return
+    end
     sendFile(workingDir, path, address, 5)
 end
 
