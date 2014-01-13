@@ -35,7 +35,7 @@ Button.propertyOrder = {
 function Button:init(params)
     Group.init(self)
     UIObjectBase.init(self, params)
-
+    
     if table.empty(self.animations) then
         self:addAnimation(ButtonAnimations.Change())
     end

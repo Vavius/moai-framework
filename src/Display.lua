@@ -23,7 +23,7 @@ local PropertyUtils = require("util.PropertyUtils")
 function Display.Sprite(fileName, width, height)
     local properties
     if type(fileName) == 'table' then
-        properties = table.dup(fileName)
+        properties = fileName
         fileName = properties['name']
         width = properties['width']
         height = properties['height']
@@ -61,7 +61,7 @@ end
 function Display.TextBox(str, width, height, fontName, fontSize, color)
     local properties
     if type(str) == 'table' then
-        properties = table.dup(str)
+        properties = str
         str = properties['text']
         width = properties['width']
         height = properties['height']
