@@ -17,7 +17,6 @@ local _getNineImageContentPadding
 -- Texture and Deck cache
 --------------------------------------------------------------------------------
 
--- variables
 ResourceMgr.resourceDirectories = {}
 ResourceMgr.filepathCache = {}
 ResourceMgr.textureCache = setmetatable({}, {__mode = "v"})

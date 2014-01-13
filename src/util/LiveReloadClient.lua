@@ -49,7 +49,7 @@ end
 
 ---
 -- Reload texture in the cache
--- Also assign it to all Decks that use this texture
+-- All props and decks will be updated automatically
 local function reloadTexture(texturePath)
     local filepath = ResourceMgr:getResourceFilePath(texturePath)
     local texture = ResourceMgr.textureCache[filepath]
