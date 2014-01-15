@@ -118,8 +118,7 @@ local function runnerFunc()
 
                 dataSock:close()
 
-                updateFile(archivePath, localPath)
-                sock:sendTo(UPDATE_SUCCESS .. localPath, ip, port)
+                updateFile(localPath)
             end
         end
         coroutine.yield()
