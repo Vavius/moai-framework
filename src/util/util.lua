@@ -59,7 +59,7 @@ function class:__object_factory()
     if moai_class then
         local obj = moai_class.new()
         obj.__class = self
-        obj:setInterface(self)
+        obj:setInterface({__index = self})
         return obj
     end
 

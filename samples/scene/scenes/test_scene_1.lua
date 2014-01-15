@@ -38,9 +38,9 @@ function TestScene:init(params)
             SceneMgr:popScene({transition = backTransition})
         end,
         layer = layer,
+        loc = {0, 0},
     }
-
-
+    -- back:seekLoc(100, 0, 0, 2)
 
     -- grp:seekRot(0, 0, 90, 2)
 end

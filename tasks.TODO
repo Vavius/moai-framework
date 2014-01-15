@@ -1,22 +1,21 @@
 Basic:
- ☐ coordinates from center
- ☐ window creation function
- ☐ scene manager
- ☐ texture and image cache
- ☐ deck cache
- ☐ texture packer loader
- ☐ group object
- ☐ input manager
+ ✔ coordinates from center @done (14-01-14 15:20)
+ ✔ window creation function @done (14-01-14 15:20)
+ ✔ scene manager @done (14-01-14 15:20)
+ ✔ texture and image cache @done (14-01-14 15:21)
+ ✔ deck cache @done (14-01-14 15:21)
+ ✔ texture packer loader @done (14-01-14 15:21)
+ ✔ group object @done (14-01-14 15:21)
+ ✔ input manager @done (14-01-14 15:21)
 
 Gui:
  ☐ button
- ☐ scroll view (different layer? or both?)
- ☐ panel
+ ☐ scroll view (moving camera)
+ ☐ dialog
+ ☐ layout
  ☐ 
-
 
 
 
 TODO (future):
  ☐ Nine image deck from sprite sheet
- ☐ 
