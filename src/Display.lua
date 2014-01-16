@@ -7,9 +7,9 @@
 
 local Display = {}
 
-local Label = require("display.Label")
-local Group = require("display.Group")
-local Layer = require("display.Layer")
+local Label = require("core.Label")
+local Group = require("core.Group")
+local Layer = require("core.Layer")
 local PropertyUtils = require("util.PropertyUtils")
 
 ---
@@ -34,12 +34,13 @@ function Display.Sprite(fileName, width, height)
     end
     
     local deck = ResourceMgr:getImageDeck(fileName, width, height)
-    
+    print("deck", deck)
     if not deck then
         local atlas = ResourceMgr:getAtlasName(fileName)
         assert(atlas, "Image not found: " .. fileName)
-
+        print("atlas", atlas)
         deck = ResourceMgr:getAtlasDeck(atlas)
+        print("atlas deck", deck)
     end
     
     local sprite = MOAIProp.new()

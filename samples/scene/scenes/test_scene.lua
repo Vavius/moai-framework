@@ -4,9 +4,9 @@
 --
 --------------------------------------------------------------------------------
 
-local Scene = require("scene.Scene")
-local Event = require("event.Event")
-local SceneTransitions = require("scene.SceneTransitions")
+local Scene = require("core.Scene")
+local Event = require("core.Event")
+local SceneTransitions = require("core.SceneTransitions")
 
 -- all scenes should be derived from Scene class
 local TestScene = class(Scene)

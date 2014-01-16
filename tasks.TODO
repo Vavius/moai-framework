@@ -10,12 +10,14 @@ Basic:
 
 Gui:
  ☐ button
- ☐ scroll view (moving camera)
+ ☐ scroll view
  ☐ dialog
- ☐ layout
- ☐ 
+ ☐ progress bar
+ ☐ slider?
+ ☐ layout generation support
 
-
+Particles:
+ ☐ Use Particle Helper
 
 TODO (future):
  ☐ Nine image deck from sprite sheet

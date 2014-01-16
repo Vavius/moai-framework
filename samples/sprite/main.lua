@@ -4,6 +4,8 @@ require("include")
 
 App:openWindow("Moo")
 
+MOAISim.setGCActive(false)
+
 ResourceMgr:addResourceDirectory("sd")
 ResourceMgr:addResourceDirectory("hd", 2, 1.5)
 
@@ -18,8 +20,8 @@ RenderMgr:addChild(layer)
 -- texture packer test 
 ResourceMgr:cacheSpriteFrames("interface.lua")
 local btn = Display.Sprite("btn_facebook.png")
-local btn2 = Display.Sprite("btn_start.png")
-
+-- local btn2 = Display.Sprite("btn_start.png")
+-- btn2:setFinalizer(function() print("finalizing") end)
 
 local grp = Display.Group(layer, 0, 0)
 grp:addChild(btn)

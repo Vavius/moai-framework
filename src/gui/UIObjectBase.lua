@@ -4,7 +4,7 @@
 -- 
 --------------------------------------------------------------------------------
 
-local EventDispatcher = require("event.EventDispatcher")
+local EventDispatcher = require("core.EventDispatcher")
 local PropertyUtils = require("util.PropertyUtils")
 
 local UIObjectBase = class(EventDispatcher)

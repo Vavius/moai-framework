@@ -4,11 +4,11 @@
 --
 --------------------------------------------------------------------------------
 
-local Group = require("display.Group")
-local Event = require("event.Event")
+local Group = require("core.Group")
+local Event = require("core.Event")
+local Executors = require("core.Executors")
 local UIEvent = require("gui.UIEvent")
 local UIObjectBase = require("gui.UIObjectBase")
-local Executors = require("util.Executors")
 
 local Dialog = class(UIObjectBase, Group)
 

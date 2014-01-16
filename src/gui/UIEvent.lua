@@ -4,7 +4,7 @@
 --
 --------------------------------------------------------------------------------
 
-local Event = require("event.Event")
+local Event = require("core.Event")
 
 UIEvent = class(Event)
 
