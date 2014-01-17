@@ -34,13 +34,10 @@ function Display.Sprite(fileName, width, height)
     end
     
     local deck = ResourceMgr:getImageDeck(fileName, width, height)
-    print("deck", deck)
     if not deck then
         local atlas = ResourceMgr:getAtlasName(fileName)
         assert(atlas, "Image not found: " .. fileName)
-        print("atlas", atlas)
         deck = ResourceMgr:getAtlasDeck(atlas)
-        print("atlas deck", deck)
     end
     
     local sprite = MOAIProp.new()
