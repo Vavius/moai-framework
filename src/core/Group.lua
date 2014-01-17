@@ -30,6 +30,20 @@ function Group:setSize(width, height)
 end
 
 ---
+-- Returns child with specified name or nil if not found
+-- @param string name
+-- @return object 
+function Group:getChildByName(name)
+    for i, child in ipairs(self.children) do
+        if child.name == name then
+            return child
+        end
+    end
+
+    return nil
+end
+
+---
 -- Adds the specified child.
 -- @param child DisplayObject
 -- @param index (option) number index at which to insert child

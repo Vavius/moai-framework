@@ -18,6 +18,8 @@ UIEvent.DIALOG_WILL_OPEN = "ui_dialogWillOpen"
 UIEvent.DIALOG_OPEN = "ui_dialogOpen"
 UIEvent.DIALOG_DID_CLOSE = "ui_dialogDidClose"
 UIEvent.DIALOG_CLOSE = "ui_dialogClose"
-
+UIEvent.SCROLL_BEGIN = "ui_scrollBegin"
+UIEvent.SCROLL_END = "ui_scrollEnd"
+UIEvent.SCROLL_POS_CHANGE = "ui_scrollPositionChange"
 
 return UIEvent
