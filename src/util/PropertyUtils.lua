@@ -43,7 +43,7 @@ function PropertyUtils.setProperty(obj, name, value, unpackFlag)
             return setter(obj, value)
         end
     else
-        assert(setter, "Not Found Property!" .. name)
+        assert(setter, "Property not found: " .. name)
         return setter(obj, unpack(value))
     end
 end

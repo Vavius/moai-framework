@@ -31,12 +31,12 @@ local SceneTransitions = {}
 --  
 --  
 
-local no_params = {}
+local no_params = {time = 0.4}
 
 SceneTransitions.fadeIn = function(params)
     params = params or no_params
     return function(sceneOut, sceneIn)
-        local time = params.time or 0.5
+        local time = params.time
         local ease = params.ease
 
         sceneIn:setVisible(true)
@@ -51,7 +51,7 @@ end
 SceneTransitions.fadeOutIn = function(params)
     params = params or no_params
     return function(sceneOut, sceneIn)
-        local time = params.time or 0.5
+        local time = params.time
         local ease = params.ease
 
         sceneIn:setVisible(true)
@@ -68,7 +68,7 @@ end
 SceneTransitions.crossfade = function(params)
     params = params or no_params
     return function(sceneOut, sceneIn)
-        local time = params.time or 0.5
+        local time = params.time
         local ease = params.ease
 
         sceneIn:setVisible(true)
@@ -86,7 +86,7 @@ end
 SceneTransitions.fromRight = function(params)
     params = params or no_params
     return function(sceneOut, sceneIn)
-        local time = params.time or 0.5
+        local time = params.time
         local ease = params.ease
         local sw, sh = App.screenWidth, App.screenHeight
 
@@ -103,7 +103,7 @@ end
 SceneTransitions.fromLeft = function(params)
     params = params or no_params
     return function(sceneOut, sceneIn)
-        local time = params.time or 0.5
+        local time = params.time
         local ease = params.ease
         local sw, sh = App.screenWidth, App.screenHeight
 
@@ -120,7 +120,7 @@ end
 SceneTransitions.fromTop = function(params)
     params = params or no_params
     return function(sceneOut, sceneIn)
-        local time = params.time or 0.5
+        local time = params.time
         local ease = params.ease
         local sw, sh = App.screenWidth, App.screenHeight
 
@@ -137,7 +137,7 @@ end
 SceneTransitions.fromBottom = function(params)
     params = params or no_params
     return function(sceneOut, sceneIn)
-        local time = params.time or 0.5
+        local time = params.time
         local ease = params.ease
         local sw, sh = App.screenWidth, App.screenHeight
 
@@ -154,7 +154,7 @@ end
 SceneTransitions.slideRight = function(params)
     params = params or no_params
     return function(sceneOut, sceneIn)
-        local time = params.time or 0.5
+        local time = params.time
         local ease = params.ease
         local sw, sh = App.screenWidth, App.screenHeight
 
@@ -174,7 +174,7 @@ end
 SceneTransitions.slideLeft = function(params)
     params = params or no_params
     return function(sceneOut, sceneIn)
-        local time = params.time or 0.5
+        local time = params.time
         local ease = params.ease
         local sw, sh = App.screenWidth, App.screenHeight
 
@@ -194,7 +194,7 @@ end
 SceneTransitions.slideTop = function(params)
     params = params or no_params
     return function(sceneOut, sceneIn)
-        local time = params.time or 0.5
+        local time = params.time
         local ease = params.ease
         local sw, sh = App.screenWidth, App.screenHeight
 
@@ -214,7 +214,7 @@ end
 SceneTransitions.slideBottom = function(params)
     params = params or no_params
     return function(sceneOut, sceneIn)
-        local time = params.time or 0.5
+        local time = params.time
         local ease = params.ease
         local sw, sh = App.screenWidth, App.screenHeight
 

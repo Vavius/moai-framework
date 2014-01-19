@@ -30,6 +30,16 @@ function Group:setSize(width, height)
 end
 
 ---
+-- Sets scissor rect recursively for all children
+-- @param MOAIScissorRect scissor rect
+function Group:setScissorRect(scissorRect)
+    self.scissorRect = scissorRect
+    for i, child in ipairs(self.children) do
+        child:setScissorRect(scissorRect)
+    end
+end
+
+---
 -- Returns child with specified name or nil if not found
 -- @param string name
 -- @return object 
@@ -56,6 +66,10 @@ function Group:addChild(child, index)
         child:setParent(self)
         child:setLayer(self.layer)
 
+        if self.scissorRect then 
+            child:setScissorRect(self.scissorRect)
+        end
+
         return true
     end
     return false
@@ -69,6 +83,7 @@ function Group:removeChild(child)
     if table.removeElement(self.children, child) then
         child:setParent(nil)
         child:setLayer(nil)
+        child:setScissorRect(nil)
 
         return true
     end

@@ -86,14 +86,12 @@ function TouchHandler:onTouch(e)
 
     -- dispatch event
     if prop then
-        e2.prop = prop
         self:dispatchTouchEvent(e2, prop)
         e:stop()
     end
     
     -- reset properties to free resources used in cached event
     e2.data = nil
-    e2.prop = nil
     e2.target = nil
     e2:setListener(nil, nil)
 end
@@ -123,8 +121,6 @@ function TouchHandler:dispatchTouchEvent(e, o)
     while o do
         if o.dispatchEvent then
             o:dispatchEvent(e)
-        elseif o.eventDispatcher then
-            o.eventDispatcher:dispatchEvent(e)
         end
         if e.stopFlag then
             break

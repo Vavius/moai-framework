@@ -98,7 +98,7 @@ function Scene:stop(params)
 end
 
 ---
--- Handle touch events sent by the EventMgr.
+-- Handle touch events sent by the InputMgr.
 -- @param e Event
 function Scene:onTouch(e)
     local e2 = table.merge(Scene.TOUCH_EVENT, e)
@@ -113,6 +113,10 @@ function Scene:onTouch(e)
             break
         end
     end
+
+    e2.data = nil
+    e2.target = nil
+    e2:setListener(nil, nil)
 end
 
 

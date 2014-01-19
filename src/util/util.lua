@@ -106,6 +106,14 @@ function math.clamp(x, min, max)
     return math.max(min, math.min(x, max))
 end
 
+---
+-- Round a number to a full number of snaps
+-- @param number x
+-- @param number (optional) snap, default is 1
+function math.round(x, snap)
+    snap = snap or 1
+    return snap * math.floor(x / snap + 0.5)
+end
 
 --------------------------------------------------------------------------------
 -- Table extensions (lua-enumerable)

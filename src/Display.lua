@@ -55,7 +55,14 @@ end
 ---
 -- Create Text Box
 -- @param str string
--- @param 
+-- @param width
+-- @param height
+-- @param fontName
+-- @param fontSize
+-- @param color
+--
+-- @overload
+-- @param   table       Properties
 function Display.TextBox(str, width, height, fontName, fontSize, color)
     local properties
     if type(str) == 'table' then
@@ -118,8 +125,35 @@ function Display.FitLabelText(label, decrement)
     end
 end
 
+---
+-- Create group
+-- @param layer
+-- @param width
+-- @param height
+--
+-- @override
+-- @param table Properties
+function Display.Group(layer, width, height)
+    local properties
+    if not layer.__class then
+        properties = layer
+        layer = properties['layer']
+        width = properties['width']
+        height = properties['height']
+
+        properties['layer'] = nil
+        properties['width'] = nil
+        properties['height'] = nil
+    end
+
+    local group = Group(layer, width, height)
+    if properties then
+        PropertyUtils.setProperties(group, properties, true)
+    end
+    return group
+end
+
 -- Expose other factory methods
-Display.Group = Group
 Display.Layer = Layer
 
 

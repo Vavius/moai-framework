@@ -9,15 +9,19 @@ Basic:
  ✔ input manager @done (14-01-14 15:21)
 
 Gui:
- ☐ button
+ ✔ button @done (14-01-18 11:26)
  ☐ scroll view
  ☐ dialog
+ ☐ nine patch from atlas
  ☐ progress bar
- ☐ slider?
- ☐ layout generation support
+ ☐ layout generation from exported coordinates
 
 Particles:
  ☐ Use Particle Helper
+ ☐ 
 
-TODO (future):
- ☐ Nine image deck from sprite sheet
+Sublime snippets:
+ ☐ Scene file
+ ☐ Layout file
+ ☐ Layout elements: scroll view, dialog, group, button, progress bar
+ ☐ 

@@ -101,67 +101,15 @@ function InputMgr:keyIsDown(key)
 end
 
 ---
--- Set specific object as focus object. Only listeners on this object will receive events. 
--- @param object TouchDispatcher
--- @param touchEvent event object 
--- @param swallow (option) bool. Send cancel touch event to all other listeners
-function InputMgr:setFocus(object, touchEvent, swallow)
-    if swallow then
-        self.ignore = object
-        
-        local event = table.dup(touchEvent)
-        event.type = Event.TOUCH_CANCEL
-
-        self:dispatchEvent(event)
-        self.ignore = nil
-    end
-
-    self.focus[touchEvent.idx or 1] = object
+-- Dispatch touch cancel event to all listeners, except the sender. 
+-- @param object Event touch begin or move event that should be cancelled
+-- @param object TouchDispatcher sender of the event. This object will not receive cancel event
+function InputMgr:dispatchCancelEvent(touchEvent, object)
+    local event = Event()
+    table.merge(event, touchEvent)
+    event.type = Event.TOUCH_CANCEL
+    
+    self:dispatchEvent(event)
 end
-
----
--- Override dispatch event to allow focus managing. 
--- @param event Event object or Event type name. 
--- @param data Data that is set in the event. 
-function InputMgr:dispatchEvent(event, data)
-    local focus = self.focus[event.idx]
-    local ignore = self.ignore
-
-    local eventName = type(event) == "string" and event
-    if eventName then
-        event = EventDispatcher.EVENT_CACHE[eventName] or Event(eventName)
-        EventDispatcher.EVENT_CACHE[eventName] = nil
-    end
-
-    assert(event.type)
-
-    event.stopFlag = false
-    event.target = self.eventTarget or self
-    if data ~= nil then
-        event.data = data
-    end
-
-    local listeners = self.eventListenersMap[event.type] or {}
-
-    for key, obj in ipairs(listeners) do
-        if (not focus or obj == focus) and obj ~= ignore and obj.type == event.type then
-            event:setListener(obj.callback, obj.source)
-            obj:call(event)
-            if event.stopFlag == true then
-                break
-            end
-        end
-    end
-
-    if eventName then
-        EventDispatcher.EVENT_CACHE[eventName] = event
-    end
-
-    -- reset properties to free resources used in cached events
-    event.data = nil
-    event.target = nil
-    event:setListener(nil, nil)
-end
-
 
 return InputMgr

@@ -10,6 +10,8 @@ local Event = require("core.Event")
 local Executors = require("core.Executors")
 local UIEvent = require("gui.UIEvent")
 local UIObjectBase = require("gui.UIObjectBase")
+local InputMgr = require("core.InputMgr")
+local math = math
 
 --------------------------------------------------------------------------------
 -- forward declarations
@@ -19,6 +21,14 @@ local Coverflow
 
 local ScrollView = class(UIObjectBase, Group)
 
+ScrollView.HORIZONTAL = "horizontal"
+ScrollView.VERTICAL = "vertical"
+ScrollView.BOTH = "both"
+ScrollView.TOP = "top"
+ScrollView.LEFT = "left"
+ScrollView.RIGHT = "right"
+ScrollView.BOTTOM = "bottom"
+ScrollView.CENTER = "center"
 
 -- Dialog {
 --     pos = {},
@@ -40,16 +50,16 @@ local ScrollView = class(UIObjectBase, Group)
 -- 
 -- scrollView = ScrollView {
 --      size = {400, 300}, 
---      visibleRect = {x1, y1, x2, y2}, -- clip rect for scissor rect, which is propagated to children
+--      clipRect = {xMin, yMin, xMax, yMax}, -- scissor rect, which is propagated to children
 --      items = { child1, child2 }, 
---      contentSize = {400, 600},   -- size of the scroll container, defines scroll bounds
---      autoSize = true,            -- adjust container size when items are added or deleted
+--      contentRect = {xMin, yMin, xMax, yMax},-- size of the scroll container, defines scroll bounds
+--      padding = {10, 10, 10, 10}, -- content padding {left, top, right, bottom}
 --      damping = 0.95,
 --      maxVelocity = 20,
---      minVelocity = 4,
+--      minVelocity = 0.1,
 --      rubberEffectDamping = 0.9,
 --      rubberEffect = false,
---      
+--      direction = ScrollView.HORIZONTAL, -- ScrollView.VERTICAL, ScrollView.BOTH
 -- }
 -- 
 -- scrollView:addItem() -- add item to scroll container
@@ -62,16 +72,20 @@ local ScrollView = class(UIObjectBase, Group)
 --------------------------------------------------------------------------------
 local CIRCULAR_ARRAY_DEFAULT_CAPACITY = 4
 local SCROLL_PARAMS = {
-    damping = 0.95,
+    damping = 0.9,
     maxVelocity = 20,
-    minVelocity = 4,
-    rubberEffectDamping = 0.9,
+    minVelocity = 0.1,
     xScrollEnabled = true,
     yScrollEnabled = true,
+    direction = ScrollView.BOTH,
     rubberEffect = true,
-    touchDistanceToSlide = 30,
-    autoSize = true,
-    clipping = false,
+    rubberEffectDamping = 0.9,
+    touchDistanceToSlide = 15,
+    padding = {10, 10, 10, 10},
+    snapOffsetX = 0,
+    snapDistanceX = nil,
+    snapOffsetY = 0,
+    snapDistanceY = nil,
 }
 
 --------------------------------------------------------------------------------
@@ -83,7 +97,7 @@ CircularArray = class()
 function CircularArray:init(cap)
     self._innerTable = { }
     self._cap = cap or CIRCULAR_ARRAY_DEFAULT_CAPACITY
-    self._lastIndex = 1
+    self:clear()
 end
 
 function CircularArray:startTracking()
@@ -92,7 +106,8 @@ function CircularArray:startTracking()
         for k, v in pairs(self._innerTable) do
             v.elapsedFrames = v.elapsedFrames + 1
             if v.elapsedFrames > self._cap then
-                self._innerTable[k] = nil
+                self._innerTable[k].x = 0
+                self._innerTable[k].y = 0
             end
         end
     end)
@@ -105,128 +120,89 @@ function CircularArray:stopTracking()
     end
 end
 
-function CircularArray:add(val)
+function CircularArray:add(x, y)
     local index = self._lastIndex
     self._innerTable[index] = {
-        value = val,
+        x = x,
+        y = y,
         elapsedFrames = 0,
     }
     self._lastIndex = 1 + (index + 1) % self._cap
 end
 
 function CircularArray:clear()
-    self._innerTable = { }
+    for i = 1, self._cap do
+        self._innerTable[i] = {x = 0, y = 0, elapsedFrames = 0}
+    end
     self._lastIndex = 1
 end
 
 function CircularArray:average()
-    local total = 0
+    local totalX = 0
+    local totalY = 0
     local count = 0
     
     for k, v in pairs(self._innerTable) do
-        total = total + v.value
-        count = count + 1
+        if v.elapsedFrames <= self._cap then
+            totalX = totalX + v.x
+            totalY = totalY + v.y
+            count = count + 1
+        end
     end
 
     if count > 0 then
-        return total / count
+        return totalX / count, totalY / count
     else
-        return 0
+        return 0, 0
     end
+end
+
+
+local function attenuation(distance)
+    distance = distance < 1 and 1 or math.pow(distance/2, 0.667)
+    return 1 / distance
 end
 
 --------------------------------------------------------------------------------
 --
 --------------------------------------------------------------------------------
-local ScrollView = class(UIObjectBase, Group)
 
+-- cache event data table
+local scrollEventData = {x = 0, y = 0}
 
 ScrollView.propertyOrder = {
     items = 2,
+    direction = 3,
     layer = 3,
-    useSeparateLayer = 4,
 }
-
 
 function ScrollView:init(params)
     Group.init(self)
-        
+    
+    -- default values
+    for k, v in pairs(SCROLL_PARAMS) do
+        self[k] = v
+    end
+
     self.container = Group()
+    self.contentRect = {0, 0, 0, 0}
     self:addChild(self.container)
 
+    -- now set all user properties
     UIObjectBase.init(self, params)
 
     self._velocityAccumulator = CircularArray()
-    self._xScrollPosition = 0
-    self._yScrollPosition = 0
-
-    for k, v in SCROLL_PARAMS do
-        if not self[k] then self[k] = v end
-    end
-
-    self.layer:addEventListener(Event.TOUCH_DOWN, self.onTouchDown, self)
-    self.layer:addEventListener(Event.TOUCH_UP, self.onTouchUp, self)
-    self.layer:addEventListener(Event.TOUCH_MOVE, self.onTouchMove, self)
-    self.layer:addEventListener(Event.TOUCH_CANCEL, self.onTouchCancel, self)
+    self._scrollPositionX = 0
+    self._scrollPositionY = 0
 end
 
 
-function ScrollView:setContentSize(width, height)
-    -- self._contentWidth = 
-end
-
----
--- Looks in inner container first
-function ScrollView:getChildByName(name)
-    for i, child in ipairs(self.container) do
-        if child.name == name then
-            return child.name
-        end
-    end
-
-    return Group.getChildByName(name)
-end
-
-
-function ScrollView:addItem(item)
-    local result = self.container:addChild(item)
-    self:recomputeContentSize()
-    return result
-end
-
-
-function ScrollView:removeItem(item)
-    local result = self.container:removeChild(item)
-    self:recomputeContentSize()
-    return result
-end
-
-
-function ScrollView:setItems(...)
-    items = {...}
-
-    for i, item in ipairs(items) do
-        self.container:addChild(child)
-    end
-end
-
-
-function ScrollView:recomputeContentSize(force)
-    if not force and not self.autoSize then
-        return
-    end
-
-
-end
-
-
-function ScrollView:scrollTo(x, y, time, ease)
-    x = x or 0
-    y = y or 0
-    time = time or 0.5
-    ease = ease or MOAIEaseType.EASE_OUT
-
-
+function ScrollView:setContentRect(xMin, yMin, xMax, yMax)
+    self.contentRect[1] = xMin or 0
+    self.contentRect[2] = yMin or 0
+    self.contentRect[3] = xMax or 0
+    self.contentRect[4] = yMax or 0
+    self:updatePossibleDirections()
 end
 
 ---
@@ -234,7 +210,7 @@ end
 -- Provides better performance. Use when you're adding more than 300 props to scroll view
 -- 
 -- @return layer scroll view layer, that should be added to scene
-function ScrollView:setUseSeparateLayer()
+function ScrollView:useSeparateLayer()
     if self._moveCamera then return end
 
     local layer = Layer()
@@ -251,12 +227,109 @@ function ScrollView:setUseSeparateLayer()
 end
 
 
+function ScrollView:setLayer(layer)
+    if self.layer == layer then return end
+
+    if self.layer then
+        self.layer:removeEventListener(Event.TOUCH_DOWN, self.onTouchDown, self)
+        self.layer:removeEventListener(Event.TOUCH_UP, self.onTouchUp, self)
+        self.layer:removeEventListener(Event.TOUCH_MOVE, self.onTouchMove, self)
+        self.layer:removeEventListener(Event.TOUCH_CANCEL, self.onTouchCancel, self)
+    end
+
+    Group.setLayer(self, layer)
+
+    if layer then
+        self.layer:addEventListener(Event.TOUCH_DOWN, self.onTouchDown, self, -10)
+        self.layer:addEventListener(Event.TOUCH_UP, self.onTouchUp, self, -10)
+        self.layer:addEventListener(Event.TOUCH_MOVE, self.onTouchMove, self, -10)
+        self.layer:addEventListener(Event.TOUCH_CANCEL, self.onTouchCancel, self, -10)
+    end
+end
+
+---
+-- Looks in inner container first
+function ScrollView:getChildByName(name)
+    for i, child in ipairs(self.container) do
+        if child.name == name then
+            return child.name
+        end
+    end
+
+    return Group.getChildByName(name)
+end
+
+---
+-- 
+function ScrollView:setDirection(dir)
+    self.direction = dir
+    self:updatePossibleDirections()
+end
+
+---
+-- Scrolls to predefined position
+-- One of: "top", "left", "right", "bottom", "center"
+function ScrollView:ScrollTo(position, time, ease)
+
+end
+
+function ScrollView:setClipRect(xMin, yMin, xMax, yMax)
+    self.scissorRect = self.scissorRect or MOAIScissorRect.new()
+    self.scissorRect:setRect(xMin, yMin, xMax, yMax)
+
+    self.container:setScissorRect(self.scissorRect)
+end
+
+function ScrollView:addItem(item)
+    return self.container:addChild(item)
+end
+
+function ScrollView:removeItem(item)
+    return self.container:removeChild(item)
+end
+
+function ScrollView:removeAllItems()
+    self.container:removeChildren()
+end
+
+
+function ScrollView:setItems(...)
+    items = {...}
+
+    for i, item in ipairs(items) do
+        self.container:addChild(item)
+    end
+end
+
+---
+-- Disables scroll in certain directions if container size is too small
+function ScrollView:updatePossibleDirections()
+    local xMin, yMin, zMin, xMax, yMax, zMax = self:getBounds()
+    local xPossible = xMax - xMin < self.contentRect[3] - self.contentRect[1]
+    local yPossible = yMax - yMin < self.contentRect[4] - self.contentRect[2]
+
+    if self.direction == ScrollView.HORIZONTAL then
+        self.xScrollEnabled = xPossible
+        self.yScrollEnabled = false
+    end
+    
+    if self.direction == ScrollView.VERTICAL then
+        self.xScrollEnabled = false
+        self.yScrollEnabled = yPossible
+    end
+
+    if self.direction == ScrollView.BOTH then
+        self.xScrollEnabled = xPossible
+        self.yScrollEnabled = yPossible
+    end
+end
+
 function ScrollView:onTouchDown(e)
-    if not isTouchInsideRect(e.wx, e.wy, self.touchRect) then
+    if not self:inside(e.wx, e.wy, 0) then
         return
     end
     
-    if (self._curScrollThread) then
+    if self._curScrollThread then
         self._curScrollThread:stop()
         self._curScrollThread = nil
     end
@@ -264,7 +337,10 @@ function ScrollView:onTouchDown(e)
     self._touchIdx = e.idx
     self._initialLocX = e.wx
     self._initialLocY = e.wy
+    self._lastTouchX = e.wx
+    self._lastTouchY = e.wy
     self._trackingTouch = false
+    self._discardCancelEvent = false
     self._velocityAccumulator:clear()
     self._velocityAccumulator:startTracking()
 end
@@ -274,26 +350,24 @@ function ScrollView:onTouchMove(e)
         return
     end
 
-    if self._trackingTouch and self._lastTouchX then
+    if self._trackingTouch then
         self:applyOffset(e.wx - self._lastTouchX, e.wy - self._lastTouchY)
-        self._velocityAccumulator:add(e.wx - self._lastTouchX)
+        self._velocityAccumulator:add(e.wx - self._lastTouchX, e.wy - self._lastTouchY)
         e:stop()
     end
     self._lastTouchX = e.wx
     self._lastTouchY = e.wy
 
     if not self._trackingTouch and 
-    (self._xScrollEnabled and self._initialLocX and math.abs(e.wx - self._initialLocX) > self.touchDistanceToSlide or
-     self._yScrollEnabled and self._initialLocY and math.abs(e.wy - self._initialLocY) > self.touchDistanceToSlide) then
+    (self.xScrollEnabled and math.abs(e.wx - self._initialLocX) > self.touchDistanceToSlide or
+     self.yScrollEnabled and math.abs(e.wy - self._initialLocY) > self.touchDistanceToSlide) then
         self._trackingTouch = true
-        self:dispatchEvent(ScrollEvent.SCROLL_BEGIN, self._xScrollPosition)
+        scrollEventData.x = self._scrollPositionX
+        scrollEventData.y = self._scrollPositionY
+        self:dispatchEvent(UIEvent.SCROLL_BEGIN, scrollEventData)
 
-        -- cancel touch for other listeners on this layer
-        -- local e2 = table.copy(e, Event())
-        -- e2.type = Event.TOUCH_CANCEL
-        -- e2.data = {swallowScrollTouch = true}
-        -- self.layer:dispatchEvent(e2)
-        self.layer.scene:swallowTouch(self.touchArea, e)
+        self._discardCancelEvent = true
+        InputMgr:dispatchCancelEvent(e, self)
     end
 end
 
@@ -318,7 +392,7 @@ function ScrollView:onTouchUp(e)
 end
 
 function ScrollView:onTouchCancel(e)
-    if self._touchIdx ~= e.idx or (e.data and e.data.swallowScrollTouch) then
+    if self._touchIdx ~= e.idx or self._discardCancelEvent then
         return
     end
 
@@ -337,20 +411,7 @@ function ScrollView:onTouchCancel(e)
     self._velocityAccumulator:stopTracking()
 end
 
-function ScrollView:setScrollBounds(xMin, yMin, xMax, yMax)
-    self._scrollBounds = {left = xMin or 0, right = xMax or 0, top = yMin or 0, bottom = yMax or 0}
-end
-
-function ScrollView:setTouchBounds(xMin, yMin, xMax, yMax)
-    self.touchRect = {xMin, yMin, xMax, yMax}
-    self.touchArea:setBounds(0, 0, 0, xMax - xMin, yMax - yMin, 0)
-    self.touchArea:setLoc(xMin, yMin)
-end
-
-function ScrollView:getScrollBounds()
-    return self._scrollBounds.xMin, self._scrollBounds.yMin, self._scrollBounds.xMax, self._scrollBounds.yMax
-end
-
+--- Check scroll bounds after applying dx and dy offsets
 -- Return values:
 -- bool: x bounds are ok, 
 -- bool: y bounds are ok, 
@@ -360,109 +421,157 @@ function ScrollView:checkBounds(dx, dy)
     dx = dx or 0
     dy = dy or 0
     
-    local newX = -(self._xScrollPosition + dx)
-    local newY = -(self._yScrollPosition + dy)
-    local xMin, yMin, xMax, yMax = unpack(self.touchRect)
+    local newX = -(self._scrollPositionX + dx)
+    local newY = -(self._scrollPositionY + dy)
+    local xMin, yMin, zMin, xMax, yMax, zMax = self:getBounds()
+    local xMinContent, yMinContent, xMaxContent, yMaxContent = unpack(self.contentRect)
+    print(xMinContent, yMinContent, xMaxContent, yMaxContent)
 
     local xOffset, yOffset = 0, 0
-    if newX + xMax > self._scrollBounds.right then
-        xOffset = newX + xMax - self._scrollBounds.right
+    if newX + xMax > xMaxContent then
+        xOffset = newX + xMax - xMaxContent
     end
-    if newX + xMin < self._scrollBounds.left then
-        xOffset = newX + xMin - self._scrollBounds.left
+    if newX + xMin < xMinContent then
+        xOffset = newX + xMin - xMinContent
     end
 
-    if newY + yMax < self._scrollBounds.bottom then
-        yOffset = newY + yMax - self._scrollBounds.bottom
+    if newY + yMin < yMinContent then
+        yOffset = newY + yMin - yMinContent
     end
-    if newY + yMin > self._scrollBounds.top then
-        yOffset = newY + yMin - self._scrollBounds.top
+    if newY + yMax > yMaxContent then
+        yOffset = newY + yMax - yMaxContent
     end
-    -- if newY + yMax < self._scrollBounds.bottom or newY + yMin > self._scrollBounds.top then
-    --     yOk = false
-    -- end
+
     return xOffset == 0, yOffset == 0, xOffset, yOffset
 end
 
 function ScrollView:applyOffset(dx, dy)
-    local xOk, yOk = self:checkBounds(dx, dy)
-    if self._touchIdx and not xOk then dx = 0.33 * dx end
-    if self._touchIdx and not yOk then dy = 0.33 * dy end
+    local xOk, yOk, xOffset, yOffset = self:checkBounds(dx, dy)
+    if self._touchIdx and not xOk then dx = attenuation(math.abs(xOffset)) * dx end
+    if self._touchIdx and not yOk then dy = attenuation(math.abs(yOffset)) * dy end
 
-    if self._xScrollEnabled then
-        self._xScrollPosition = self._xScrollPosition + dx
+    if self.xScrollEnabled then
+        self._scrollPositionX = self._scrollPositionX + dx
     end
-    if self._yScrollEnabled then
-        self._yScrollPosition = self._yScrollPosition + dy
+    if self.yScrollEnabled then
+        self._scrollPositionY = self._scrollPositionY + dy
     end
     
     self:updatePosition()
 end
 
 function ScrollView:updatePosition()
-    self.camera:setLoc(-self._xScrollPosition, -self._yScrollPosition)
-    -- self.scrollContainer:setLoc(self._xScrollPosition, self._yScrollPosition)
-    self:dispatchEvent(ScrollEvent.POSITION_CHANGED, self._xScrollPosition)
+    if self._moveCamera then
+        self.camera:setLoc(-self._scrollPositionX, -self._scrollPositionY)
+    else
+        self.container:setLoc(self._scrollPositionX, self._scrollPositionY)
+    end
+    scrollEventData.x = self._scrollPositionX
+    scrollEventData.y = self._scrollPositionY
+    self:dispatchEvent(UIEvent.SCROLL_POSITION_CHANGED, scrollEventData)
 end
 
-function ScrollView:scrollToPosition(newX, time)
-    assert(newX)
+-- cache anim curves
+local animCurveX = MOAIAnimCurve.new()
+local animCurveY = MOAIAnimCurve.new()
+animCurveX:reserveKeys(2)
+animCurveY:reserveKeys(2)
+
+function ScrollView:scrollToPosition(newX, newY, time, ease)
+    time = time or 0.1 * math.distance(newX, newY, self._scrollPositionX, self._scrollPositionY)
+    ease = ease or MOAIEaseType.SOFT_EASE_IN
+    newX = newX or self._scrollPositionX
+    newY = newY or self._scrollPositionY
+
     if self._curScrollThread then
         self._curScrollThread:stop()
+        self._curScrollThread = nil
     end
 
-    local time = time or 0.1 * math.abs(newX - self._xScrollPosition)
-    local animCurve = MOAIAnimCurve.new()
+    if time == 0 then
+        self._scrollPositionX = newX
+        self._scrollPositionY = newY
+        self:updatePosition()
+        return
+    end
+
     local animLength = 10 + time
-    animCurve:reserveKeys(2)
-    animCurve:setKey(1, 0, self._xScrollPosition, MOAIEaseType.SOFT_EASE_IN)
-    animCurve:setKey(2, animLength, newX)
+    animCurveX:setKey(1, 0, self._scrollPositionX, ease)
+    animCurveX:setKey(2, animLength, newX)
+
+    animCurveY:setKey(1, 0, self._scrollPositionY, ease)
+    animCurveY:setKey(2, animLength, newY)
 
     local thread = MOAICoroutine.new()
     thread:run(
         function ()
             for f = 1, animLength do
-                self._xScrollPosition = animCurve:getValueAtTime(f)
+                self._scrollPositionX = animCurveX:getValueAtTime(f)
+                self._scrollPositionY = animCurveY:getValueAtTime(f)
                 self:updatePosition()
                 coroutine.yield()
             end
-            self:dispatchEvent(ScrollEvent.SCROLL_END, self._xScrollPosition)
+            scrollEventData.x = self._scrollPositionX
+            scrollEventData.y = self._scrollPositionY
+            self:dispatchEvent(UIEvent.SCROLL_END, scrollEventData)
         end
     )
     self._curScrollThread = thread
 end
 
 function ScrollView:startKineticScroll()
-    self._currentVelocity = math.clamp(self._velocityAccumulator:average(), -self._maxVelocity, self._maxVelocity)
+    local velX, velY = self._velocityAccumulator:average()
+    self._currentVelocityX = math.clamp(velX, -self.maxVelocity, self.maxVelocity)
+    self._currentVelocityY = math.clamp(velY, -self.maxVelocity, self.maxVelocity)
     if self._curScrollThread then
         self._curScrollThread:stop()
     end
 
-    self._curScrollThread = flower.Executors.callLoop(function()
-        local xOk, yOk = self:checkBounds(0,0)
+    self._curScrollThread = Executors.callLoop(function()
+        local xOk, yOk = self:checkBounds(0, 0)
+        
+        xOk = self.xScrollEnabled and (xOk and math.abs(self._currentVelocityX) > self.minVelocity)
+        yOk = self.yScrollEnabled and (yOk and math.abs(self._currentVelocityY) > self.minVelocity)
 
-        if not xOk or math.abs(self._currentVelocity) < self._minVelocity then
+        if not xOk and not yOk then
             self:startRubberEffect()
             return true
         end
 
-        self._currentVelocity = self.scrollDamping * self._currentVelocity * (xOk and 1 or M.SCROLL_RUBBER_EFFECT_DAMPING)
-        self._xScrollPosition = self._xScrollPosition + self._currentVelocity
+        if self.xScrollEnabled then
+            self._currentVelocityX = self.damping * self._currentVelocityX * (xOk and 1 or self.rubberEffectDamping)
+            self._scrollPositionX = self._scrollPositionX + self._currentVelocityX
+        end
+
+        if self.yScrollEnabled then
+            self._currentVelocityY = self.damping * self._currentVelocityY * (yOk and 1 or self.rubberEffectDamping)
+            self._scrollPositionY = self._scrollPositionY + self._currentVelocityY
+        end
+        
         self:updatePosition()
     end)
 end
 
 function ScrollView:startRubberEffect()
     local xOk, yOk, xOffset, yOffset = self:checkBounds()
-    if xOk and yOk then
-        return
+    
+    local x = self._scrollPositionX + xOffset
+    local y = self._scrollPositionY + yOffset
+
+    if self.snapDistanceX then
+        local velOffset = self._currentVelocityX / (1 - self.damping)
+        x = math.round(x + velOffset - self.snapOffsetX, self.snapDistanceX) + self.snapOffsetX
+        xOk = false
+    end
+    if self.snapDistanceY then
+        local velOffset = self._currentVelocityY / (1 - self.damping)
+        y = math.round(y + velOffset - self.snapOffsetY, self.snapDistanceY) + self.snapOffsetY
+        yOk = false
     end
 
-    self:scrollToPosition(self._xScrollPosition + xOffset)
+    if (not xOk and self.xScrollEnabled) or (not yOk and self.yScrollEnabled) then
+        self:scrollToPosition(x, y)
+    end
 end
 
-
-
-
-
-
+return ScrollView
