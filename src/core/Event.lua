@@ -6,7 +6,14 @@
 ----------------------------------------------------------------------------------------------------
 local Event = class()
 
+Event.RESIZE        = "resize"
 Event.ENTER_FRAME   = "enterFrame"
+Event.SESSION_START = "sessionStart"
+Event.SESSION_END   = "sessionEnd"
+Event.OPENED_FROM_URL = "openedFromUrl"
+Event.PAUSE         = "pause"
+Event.RESUME        = "resume"
+
 Event.ENTER         = "enter"
 Event.EXIT          = "exit"
 Event.WILL_ENTER    = "willEnter"
@@ -19,7 +26,6 @@ Event.TOUCH_MOVE    = "touchMove"
 Event.TOUCH_CANCEL  = "touchCancel"
 Event.KEY_DOWN      = "keyDown"
 Event.KEY_UP        = "keyUp"
-Event.RESIZE        = "resize"
 
 ---
 -- Event's constructor.

@@ -92,8 +92,6 @@ function TestScene:createScene()
         -- snapDistanceY = 40,
         -- minVelocity = 1,
     }
-
-
 end
 
 
