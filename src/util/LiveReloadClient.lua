@@ -6,6 +6,7 @@
 
 local ResourceMgr = require("core.ResourceMgr")
 local SceneMgr = require("core.SceneMgr")
+local Runtime = require("core.Runtime")
 
 if MOAIEnvironment.documentDirectory then
     package.path = MOAIEnvironment.documentDirectory .. '/live_update/?.lua;' .. package.path
@@ -132,10 +133,27 @@ local function runnerFunc()
     sock:close()
 end
 
+function M:init()
+    local function onSessionEnd()
+        self:stop()
+    end
+
+    local function onSessionStart()
+        self:start()
+    end
+
+    Runtime:addEventListener(Event.SESSION_START, onSessionStart)
+    Runtime:addEventListener(Event.SESSION_END, onSessionEnd)
+
+    self:start()
+end
+
 function M:start()
-    local runner = MOAICoroutine.new()
-    runner:run(runnerFunc)
-    self.runner = runner
+    if not self.runner then
+        local runner = MOAICoroutine.new()
+        runner:run(runnerFunc)
+        self.runner = runner
+    end
 end
 
 function M:stop()
