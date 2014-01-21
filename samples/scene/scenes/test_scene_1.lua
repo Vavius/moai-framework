@@ -40,6 +40,7 @@ function TestScene:init(params)
         layer = layer,
         loc = {0, 0},
     }
+    back:seekScl(2, 2, 0, 2)
     
     -- grp:seekRot(0, 0, 90, 2)
 end

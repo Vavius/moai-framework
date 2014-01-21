@@ -115,6 +115,12 @@ function math.round(x, snap)
     return snap * math.floor(x / snap + 0.5)
 end
 
+---
+-- Returns whether a point inside given rect
+function math.inside(x, y, xMin, yMin, xMax, yMax)
+    return x > xMin and x < xMax and y > yMin and y < yMax
+end
+
 --------------------------------------------------------------------------------
 -- Table extensions (lua-enumerable)
 --------------------------------------------------------------------------------

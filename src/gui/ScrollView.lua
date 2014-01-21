@@ -30,21 +30,6 @@ ScrollView.RIGHT = "right"
 ScrollView.BOTTOM = "bottom"
 ScrollView.CENTER = "center"
 
--- Dialog {
---     pos = {},
---     background = Sprite(),
---     children = {
---         Button {
---             close,
-
---         }
---         ScrollView {
-
---         }
---     },
-
--- }
-
 ---
 -- Example usage
 -- 
@@ -53,7 +38,6 @@ ScrollView.CENTER = "center"
 --      clipRect = {xMin, yMin, xMax, yMax}, -- scissor rect, which is propagated to children
 --      items = { child1, child2 }, 
 --      contentRect = {xMin, yMin, xMax, yMax},-- size of the scroll container, defines scroll bounds
---      padding = {10, 10, 10, 10}, -- content padding {left, top, right, bottom}
 --      damping = 0.95,
 --      maxVelocity = 20,
 --      minVelocity = 0.1,
@@ -203,27 +187,6 @@ function ScrollView:setContentRect(xMin, yMin, xMax, yMax)
     self.contentRect[3] = xMax or 0
     self.contentRect[4] = yMax or 0
     self:updatePossibleDirections()
-end
-
----
--- Initializes scroll view to use separate layer with moving camera
--- Provides better performance. Use when you're adding more than 300 props to scroll view
--- 
--- @return layer scroll view layer, that should be added to scene
-function ScrollView:useSeparateLayer()
-    if self._moveCamera then return end
-
-    local layer = Layer()
-    layer:setTouchEnabled(true)
-
-    self.container:setLayer(layer)
-
-    local camera = MOAICamera()
-    layer:setCamera(camera)
-    self.camera = camera
-    self._moveCamera = true
-
-    return layer
 end
 
 
@@ -425,7 +388,6 @@ function ScrollView:checkBounds(dx, dy)
     local newY = -(self._scrollPositionY + dy)
     local xMin, yMin, zMin, xMax, yMax, zMax = self:getBounds()
     local xMinContent, yMinContent, xMaxContent, yMaxContent = unpack(self.contentRect)
-    print(xMinContent, yMinContent, xMaxContent, yMaxContent)
 
     local xOffset, yOffset = 0, 0
     if newX + xMax > xMaxContent then
@@ -461,11 +423,7 @@ function ScrollView:applyOffset(dx, dy)
 end
 
 function ScrollView:updatePosition()
-    if self._moveCamera then
-        self.camera:setLoc(-self._scrollPositionX, -self._scrollPositionY)
-    else
-        self.container:setLoc(self._scrollPositionX, self._scrollPositionY)
-    end
+    self.container:setLoc(self._scrollPositionX, self._scrollPositionY)
     scrollEventData.x = self._scrollPositionX
     scrollEventData.y = self._scrollPositionY
     self:dispatchEvent(UIEvent.SCROLL_POSITION_CHANGED, scrollEventData)

@@ -12,6 +12,8 @@ local UIObjectBase = require("gui.UIObjectBase")
 
 local Dialog = class(UIObjectBase, Group)
 
+local Group = Display.Group
+
 ---
 -- Example usage
 -- 
@@ -47,8 +49,8 @@ end
 
 
 ---
--- 
--- 
+-- Set the background
+-- Background is just a child at index 1
 function Dialog:setBackground(bg)
     self.background = bg
     self:addChild(background, 1)

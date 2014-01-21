@@ -28,6 +28,7 @@ local Button = class(UIObjectBase, Group)
 
 
 Button.propertyOrder = {
+    size = 2,
     label = 2,
     layer = 3,
 }
@@ -35,6 +36,8 @@ Button.propertyOrder = {
 function Button:init(params)
     Group.init(self)
     UIObjectBase.init(self, params)
+
+    assert(self.normalSprite)
     
     if table.empty(self.animations) then
         self:addAnimation(ButtonAnimations.Change())
@@ -43,11 +46,6 @@ function Button:init(params)
     self:initEventListeners()
     self:setEnabled(true)
     self:setSelected(false)
-
-    assert(self.normalSprite, "Button: normal sprite is not set")
-
-    local w, h = self.normalSprite:getDims()
-    self:setSize(w, h)
 end
 
 
@@ -100,6 +98,21 @@ function Button:setDisabledSprite(sprite)
     if sprite then
         self:addChild(sprite)
         self.disabledSprite = sprite
+    end
+end
+
+---
+--
+--
+function Button:setSize(width, height)
+    Group.setSize(self, width, height)
+
+    if self.normalSprite then
+        self.normalSprite:setBounds(-0.5 * width, -0.5 * height, 0, 0.5 * width, 0.5 * height, 0)
+    end
+
+    if self.selectedSprite then
+        self.selectedSprite:setBounds(-0.5 * width, -0.5 * height, 0, 0.5 * width, 0.5 * height, 0)
     end
 end
 
@@ -193,13 +206,14 @@ end
 -- 
 -- 
 function Button:onTouchDown(event)
+    print("On Click")
     event:stop()
 
     if self._touchDownIdx ~= nil then
         return
     end
     self._touchDownIdx = event.idx
-    
+
     self:setSelected(true)
 end
 
@@ -213,7 +227,7 @@ function Button:onTouchMove(event)
         return
     end
     
-    local inside = self:inside(event.wx, event.wy, 0)
+    local inside = self.normalSprite:inside(event.wx, event.wy, 0)
 
     if inside ~= self.selected then
         self:setSelected(inside)
@@ -237,7 +251,7 @@ function Button:onTouchUp(event)
     
     self:setSelected(false)
 
-    if not self:inside(event.wx, event.wy, 0) then
+    if not self.normalSprite:inside(event.wx, event.wy, 0) then
         return
     end
 

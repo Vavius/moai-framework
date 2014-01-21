@@ -76,6 +76,17 @@ function Group:addChild(child, index)
 end
 
 ---
+-- Add objects to group. 
+-- Provides compatibility with propertyUtils
+-- @param vararg objects 
+function Group:setChildren(...)
+    local children = {...}
+    for i, child in ipairs(children) do
+        self:addChild(child)
+    end
+end
+
+---
 -- Removes a child.
 -- @param child DisplayObject
 -- @return True if removed.

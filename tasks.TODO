@@ -1,18 +1,18 @@
 Basic:
- ✔ coordinates from center @done (14-01-14 15:20)
- ✔ window creation function @done (14-01-14 15:20)
- ✔ scene manager @done (14-01-14 15:20)
- ✔ texture and image cache @done (14-01-14 15:21)
- ✔ deck cache @done (14-01-14 15:21)
- ✔ texture packer loader @done (14-01-14 15:21)
- ✔ group object @done (14-01-14 15:21)
- ✔ input manager @done (14-01-14 15:21)
+ ✔ coordinates from center @done (14-01-20 16:43)
+ ✔ window creation function @done (14-01-20 16:43)
+ ✔ scene manager @done (14-01-20 16:43)
+ ✔ texture and image cache @done (14-01-20 16:43)
+ ✔ deck cache @done (14-01-20 16:43)
+ ✔ texture packer loader @done (14-01-20 16:43)
+ ✔ group object @done (14-01-20 16:43)
+ ✔ input manager @done (14-01-20 16:43)
 
 Gui:
- ✔ button @done (14-01-18 11:26)
- ☐ scroll view
+ ✔ button @done (14-01-20 16:43)
+ ✔ scroll view @done (14-01-20 16:43)
  ☐ dialog
- ☐ nine patch from atlas
+ ✔ nine patch from atlas @done (14-01-20 11:43)
  ☐ progress bar
  ☐ layout generation from exported coordinates
 
@@ -24,4 +24,6 @@ Sublime snippets:
  ☐ Scene file
  ☐ Layout file
  ☐ Layout elements: scroll view, dialog, group, button, progress bar
- ☐ 
+
+
+

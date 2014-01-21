@@ -82,15 +82,15 @@ function TestScene:createScene()
         items[#items + 1] = button
     end
 
-    local menu = Gui.ScrollView {
+    local menu = Gui.ScrollView { 
         size = {200, 300}, 
         items = items, 
         contentRect = {-100, -200, 100, 200}, 
-        clipRect = {-100, -150, 100, 150},
-        direction = Gui.ScrollView.VERTICAL,
-        layer = layer,
-        -- snapDistanceY = 40,
-        -- minVelocity = 1,
+        clipRect = {-100, -150, 100, 150}, 
+        direction = Gui.ScrollView.VERTICAL, 
+        layer = layer, 
+        -- snapDistanceY = 40, 
+        -- minVelocity = 1, 
     }
 end
 
