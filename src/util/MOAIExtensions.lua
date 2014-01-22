@@ -7,6 +7,41 @@
 
 
 --------------------------------------------------------------------------------
+-- Common overrides for all prop subclasses
+--------------------------------------------------------------------------------
+
+local function initPropInterface ( interface, superInterface )
+
+    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    function interface.setParent ( self, parent )
+
+        self.parent = parent
+
+        superInterface.clearAttrLink ( self, MOAIColor.INHERIT_COLOR )
+        superInterface.clearAttrLink ( self, MOAITransform.INHERIT_TRANSFORM )
+        superInterface.clearAttrLink ( self, MOAIProp.INHERIT_VISIBLE )
+
+        if parent then
+            superInterface.setAttrLink ( self, MOAIColor.INHERIT_COLOR, parent, MOAIColor.COLOR_TRAIT )
+            superInterface.setAttrLink ( self, MOAIProp.INHERIT_VISIBLE, parent, MOAIProp.ATTR_VISIBLE )
+            superInterface.setAttrLink ( self, MOAITransform.INHERIT_TRANSFORM, parent, MOAITransform.TRANSFORM_TRAIT )
+        end
+    end
+
+    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    function interface.getVisible ( self )
+        return superInterface.getAttr ( self, MOAIProp.ATTR_VISIBLE ) > 0
+    end
+
+    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    function interface.setScissorRect ( self, scissorRect )
+        self.scissorRect = scissorRect
+        superInterface.setScissorRect ( self, scissorRect )
+    end
+end
+
+
+--------------------------------------------------------------------------------
 -- MOAIProp
 --------------------------------------------------------------------------------
 
@@ -16,21 +51,7 @@ MOAIProp.extend (
     
     --------------------------------------------------------------------------------
     function ( interface, class, superInterface, superClass )
-        -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-        function interface.setParent ( self, parent )
-
-            self.parent = parent
-
-            superInterface.clearAttrLink ( self, MOAIColor.INHERIT_COLOR )
-            superInterface.clearAttrLink ( self, MOAITransform.INHERIT_TRANSFORM )
-            superInterface.clearAttrLink ( self, MOAIProp.INHERIT_VISIBLE )
-
-            if parent then
-                superInterface.setAttrLink ( self, MOAIColor.INHERIT_COLOR, parent, MOAIColor.COLOR_TRAIT )
-                superInterface.setAttrLink ( self, MOAIProp.INHERIT_VISIBLE, parent, MOAIProp.ATTR_VISIBLE )
-                superInterface.setAttrLink ( self, MOAITransform.INHERIT_TRANSFORM, parent, MOAITransform.TRANSFORM_TRAIT )
-            end
-        end
+        initPropInterface ( interface, superInterface )
         
         -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
         function interface.setLayer ( self, layer )
@@ -55,18 +76,13 @@ MOAIProp.extend (
 
         -- end
 
-        -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -
+        -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
         function interface.setIndexByName ( self, name )
 
             if type(name) == "string" then
                 local index = (self.deck and self.deck.names) and self.deck.names[name] or superInterface.getIndex(self)
                 self:setIndex(index)
             end
-        end
-
-        -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-        function interface.getVisible ( self )
-            return superInterface.getAttr ( self, MOAIProp.ATTR_VISIBLE ) > 0
         end
     end
 )
@@ -81,31 +97,11 @@ MOAILayer.extend (
     
     --------------------------------------------------------------------------------
     function ( interface, class, superInterface, superClass )
-    
-        -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-        function interface.setParent ( self, parent )
-
-            self.parent = parent
-
-            superInterface.clearAttrLink ( self, MOAIColor.INHERIT_COLOR )
-            superInterface.clearAttrLink ( self, MOAITransform.INHERIT_TRANSFORM )
-            superInterface.clearAttrLink ( self, MOAIProp.INHERIT_VISIBLE )
-
-            if parent then
-                superInterface.setAttrLink ( self, MOAIColor.INHERIT_COLOR, parent, MOAIColor.COLOR_TRAIT )
-                superInterface.setAttrLink ( self, MOAIProp.INHERIT_VISIBLE, parent, MOAIProp.ATTR_VISIBLE )
-                superInterface.setAttrLink ( self, MOAITransform.INHERIT_TRANSFORM, parent, MOAITransform.TRANSFORM_TRAIT )
-            end
-        end
+        initPropInterface ( interface, superInterface )
         
         -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
         function interface.setLayer ( self, layer )
             -- nested layers not supported
-        end
-
-        -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-        function interface.getVisible ( self )
-            return superInterface.getAttr ( self, MOAIProp.ATTR_VISIBLE ) > 0
         end
     end
 )
@@ -122,21 +118,7 @@ MOAITextBox.extend (
 
     --------------------------------------------------------------------------------
     function ( interface, class, superInterface, superClass )
-        -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-        function interface.setParent ( self, parent )
-
-            self.parent = parent
-
-            superInterface.clearAttrLink ( self, MOAIColor.INHERIT_COLOR )
-            superInterface.clearAttrLink ( self, MOAITransform.INHERIT_TRANSFORM )
-            superInterface.clearAttrLink ( self, MOAIProp.INHERIT_VISIBLE )
-
-            if parent then
-                superInterface.setAttrLink ( self, MOAIColor.INHERIT_COLOR, parent, MOAIColor.COLOR_TRAIT )
-                superInterface.setAttrLink ( self, MOAIProp.INHERIT_VISIBLE, parent, MOAIProp.ATTR_VISIBLE )
-                superInterface.setAttrLink ( self, MOAITransform.INHERIT_TRANSFORM, parent, MOAITransform.TRANSFORM_TRAIT )
-            end
-        end
+        initPropInterface ( interface, superInterface )
         
         -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
         function interface.setLayer ( self, layer )
@@ -154,11 +136,6 @@ MOAITextBox.extend (
             if self.layer then
                 layer:insertProp ( self )
             end
-        end
-
-        -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-        function interface.getVisible ( self )
-            return superInterface.getAttr ( self, MOAIProp.ATTR_VISIBLE ) > 0
         end
     end
 

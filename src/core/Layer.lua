@@ -41,6 +41,27 @@ function Layer:setTouchEnabled(value)
 end
 
 
+---
+-- Test if prop can receive touch
+-- Takes into account prop's scissor rect and custom flags
+local function propCanReceiveTouch(prop, wx, wy)
+    if prop.ignoreTouch or prop:getAttr(MOAIProp.ATTR_VISIBLE) == 0 then
+        return false
+    end
+
+    if prop.scissorRect then
+        local xMin, yMin, xMax, yMax = prop.scissorRect:getRect()
+        print(prop.scissorRect)
+        print(xMin, yMin, xMax, yMax)
+        xMin, yMin = prop.scissorRect:modelToWorld(xMin, yMin, 0)
+        xMax, yMax = prop.scissorRect:modelToWorld(xMax, yMax, 0)
+        print(wx, wy, xMin, yMin, xMax, yMax)
+        return (wx > xMin and wx < xMax) and (wy > yMin and wy < yMax)
+    end
+
+    return true
+end
+
 
 TouchHandler.TOUCH_EVENT = Event()
 
@@ -78,7 +99,6 @@ function TouchHandler:onTouch(e)
 
     elseif e.type == Event.TOUCH_CANCEL then
         self.touchProps[e.idx] = nil
-
     end
 
     -- touch event
@@ -106,7 +126,7 @@ function TouchHandler:getTouchableProp(e)
     local props = {partition:propListForPoint(e.wx, e.wy, 0, sortMode)}
     for i = #props, 1, -1 do
         local prop = props[i]
-        if not prop.ignoreTouch and prop:getAttr(MOAIProp.ATTR_VISIBLE) > 0 then
+        if propCanReceiveTouch(prop, e.wx, e.wy) then
             return prop
         end
     end

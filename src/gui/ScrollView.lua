@@ -232,15 +232,31 @@ end
 ---
 -- Scrolls to predefined position
 -- One of: "top", "left", "right", "bottom", "center"
-function ScrollView:ScrollTo(position, time, ease)
-
+function ScrollView:scrollTo(position, time, ease)
+    local x, y = self._scrollPositionX, self._scrollPositionY
+    local xMin, yMin, zMin, xMax, yMax, zMax = self:getBounds()
+    if position == ScrollView.TOP then
+        y = yMax - self.contentRect[4]
+    elseif position == ScrollView.BOTTOM then
+        y = yMin - self.contentRect[2]
+    elseif position == ScrollView.LEFT then
+        x = xMin - self.contentRect[1]
+    elseif position == ScrollView.RIGHT then
+        x = xMax - self.contentRect[3]
+    elseif position == ScrollView.CENTER then
+        x = 0
+        y = 0
+    end
+    self:scrollToPosition(x, y, time, ease)
 end
 
 function ScrollView:setClipRect(xMin, yMin, xMax, yMax)
     self.scissorRect = self.scissorRect or MOAIScissorRect.new()
     self.scissorRect:setRect(xMin, yMin, xMax, yMax)
-
-    self.container:setScissorRect(self.scissorRect)
+    
+    self.scissorRect:setAttrLink(MOAITransform.INHERIT_TRANSFORM, self, MOAITransform.TRANSFORM_TRAIT)
+    
+    self:setScissorRect(self.scissorRect)
 end
 
 function ScrollView:addItem(item)

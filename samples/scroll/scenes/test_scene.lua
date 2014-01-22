@@ -6,7 +6,6 @@
 
 local Scene = require("core.Scene")
 local Event = require("core.Event")
-local SceneTransitions = require("core.SceneTransitions")
 
 -- all scenes should be derived from Scene class
 local TestScene = class(Scene)
@@ -55,6 +54,8 @@ end
 -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 local Sprite = Display.Sprite
 local Label = Display.Label
+local Button = Gui.Button
+local ScrollView = Gui.ScrollView
 
 function TestScene:createScene()
     local layer = Display.Layer()
@@ -74,7 +75,7 @@ function TestScene:createScene()
             selectedSprite = Sprite("btn_buy_active.png"),
             label = Label("slideBottom", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
             onClick = function()
-                SceneMgr:pushScene("scenes.scroll_nest", {transition = SceneTransitions.crossfade()})
+                SceneMgr:pushScene("scenes.scroll_nest", {transition = "crossfade"})
             end,
             loc = {0, y, 0},
         }
@@ -85,12 +86,50 @@ function TestScene:createScene()
     local menu = Gui.ScrollView { 
         size = {200, 300}, 
         items = items, 
-        contentRect = {-100, -200, 100, 200}, 
+        contentRect = {-200, -300, 200, 300}, 
         clipRect = {-100, -150, 100, 150}, 
-        direction = Gui.ScrollView.VERTICAL, 
+        direction = Gui.ScrollView.BOTH, 
         layer = layer, 
-        -- snapDistanceY = 40, 
-        -- minVelocity = 1, 
+    }
+
+    local topBtn = Button {
+        normalSprite = Sprite("btn_buy.png"),
+        selectedSprite = Sprite("btn_buy_active.png"),
+        label = Label("Top", nil, nil, "Verdana.ttf", 18, {0, 0, 0, 1}),
+        layer = layer,
+        loc = {-120, -220},
+        scl = {0.5, 0.5},
+        onClick = function(e) menu:scrollTo(ScrollView.TOP) end,
+    }
+
+    local bottomBtn = Button {
+        normalSprite = Sprite("btn_buy.png"),
+        selectedSprite = Sprite("btn_buy_active.png"),
+        label = Label("Bottom", nil, nil, "Verdana.ttf", 18, {0, 0, 0, 1}),
+        layer = layer,
+        loc = {-40, -220},
+        scl = {0.5, 0.5},
+        onClick = function(e) menu:scrollTo(ScrollView.BOTTOM) end,
+    }
+
+    local leftBtn = Button {
+        normalSprite = Sprite("btn_buy.png"),
+        selectedSprite = Sprite("btn_buy_active.png"),
+        label = Label("Left", nil, nil, "Verdana.ttf", 18, {0, 0, 0, 1}),
+        layer = layer,
+        loc = {40, -220},
+        scl = {0.5, 0.5},
+        onClick = function(e) menu:scrollTo(ScrollView.LEFT) end,
+    }
+
+    local rightBtn = Button {
+        normalSprite = Sprite("btn_buy.png"),
+        selectedSprite = Sprite("btn_buy_active.png"),
+        label = Label("Right", nil, nil, "Verdana.ttf", 18, {0, 0, 0, 1}),
+        layer = layer,
+        loc = {120, -220},
+        scl = {0.5, 0.5},
+        onClick = function(e) menu:scrollTo(ScrollView.RIGHT) end,
     }
 end
 

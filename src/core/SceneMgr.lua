@@ -14,6 +14,7 @@ local Event             = require("core.Event")
 local EventDispatcher   = require("core.EventDispatcher")
 local Executors         = require("core.Executors")
 local Scene             = require("core.Scene")
+local SceneTransitions  = require("core.SceneTransitions")
 
 SceneMgr.scenes = {}
 SceneMgr.renderTable = {}
@@ -76,12 +77,8 @@ end
 
 ---
 -- Open the scene for internal implementation.
--- variable that can be specified in params are as follows.
--- <ul>
---   <li>animation: Scene animation of transition. </li>
---   <li>duration: Transition time. </li>
---   <li>easeType: EaseType to animation scene. </li>
--- </ul>
+-- Params will be passed to scene events
+-- special param value is 'transition'
 function SceneMgr:internalOpenScene(scene, params, currentCloseFlag)
     params = params or {}
 
@@ -114,6 +111,10 @@ function SceneMgr:internalOpenScene(scene, params, currentCloseFlag)
     end
 
     local animation = params.transition
+    print(animation)
+    if type(animation) == "string" then
+        animation = SceneTransitions[animation]()
+    end
 
     if animation then
         Executors.callOnce(
@@ -179,6 +180,9 @@ function SceneMgr:closeScene(params, backCount)
     end
 
     local animation = params.transition
+    if type(animation) == "string" then
+        animation = SceneTransitions[animation]()
+    end
 
     if animation then
         Executors.callOnce(

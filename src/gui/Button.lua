@@ -206,7 +206,6 @@ end
 -- 
 -- 
 function Button:onTouchDown(event)
-    print("On Click")
     event:stop()
 
     if self._touchDownIdx ~= nil then
