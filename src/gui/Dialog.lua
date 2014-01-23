@@ -4,94 +4,41 @@
 -- 
 --------------------------------------------------------------------------------
 
-local Group = require("core.Group")
+local Layer = require("core.Layer")
 local Event = require("core.Event")
 local Executors = require("core.Executors")
 local UIEvent = require("gui.UIEvent")
-local UIObjectBase = require("gui.UIObjectBase")
+local InputMgr = require("core.InputMgr")
+local DialogAnimations = require("gui.DialogAnimations")
 
-local Dialog = class(UIObjectBase, Group)
-
-local Group = Display.Group
-
----
--- Example usage
--- 
--- dialog = Dialog {
---      background = Sprite("bg.png"),
---      size = {400, 300},
---      children = { child1, child2 },
---      
--- }
--- dialog:open()
+local Dialog = class(Layer)
 
 ---
 -- 
 -- 
-function Dialog:init(params)
-    Group.init(self)
-    UIObjectBase.init(self, params)
+function Dialog:init(scene, modal)
+    Layer.init(self)
+    assert(scene, "Dialog scene not specified")
 
-    self:initEventListeners()
+    self.scene = scene
+    self.modal = modal
 end
-
-
----
--- 
--- 
-function Dialog:setChildren(...)
-    local children = {...}
-
-    for i, child in ipairs(children) do
-        self:addChild(child)
-    end
-end
-
-
----
--- Set the background
--- Background is just a child at index 1
-function Dialog:setBackground(bg)
-    self.background = bg
-    self:addChild(background, 1)
-
-    local w, h = self:getDims()
-    if w and h then
-        self:setSize(w, h)
-    end
-end
-
-
----
--- 
--- 
-function Dialog:setSize(width, height)
-    Group.setSize(self, width, height)
-
-    if self.background and self.background:getDims() then
-        local bgW, bgH = self.background:getDims()
-        if bgW and bgH then
-            self.background:setScl(width / bgW, height / bgH)
-        end
-    end
-end
-
----
--- 
--- 
-function Dialog:initEventListeners()
-
-end
-
 
 ---
 -- 
 -- 
 function Dialog:open(animation)
-    self:setVisible(true)
+    self.scene:addLayer(self)
 
     local onTransitionFinished = function()
+        if self.modal then
+            InputMgr:setFocusLayer(self)
+        end
         self:dispatchEvent(UIEvent.DIALOG_OPEN)
+    end
+
+    if type(animation) then
+        animation = DialogAnimations[animation]()
     end
 
     if animation then
@@ -113,8 +60,15 @@ end
 -- 
 function Dialog:close(animation)
     local onTransitionFinished = function()
-        self:setVisible(false)
+        if self.modal then
+            InputMgr:setFocusLayer(self)
+        end
+        self.scene:removeLayer(self)
         self:dispatchEvent(UIEvent.DIALOG_DID_CLOSE)
+    end
+
+    if type(animation) then
+        animation = DialogAnimations[animation]()
     end
 
     if animation then

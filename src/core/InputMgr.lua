@@ -89,6 +89,12 @@ function InputMgr:initialize()
     end
 end
 
+---
+-- Set layer as focused. Only this layer will receive touch events. 
+-- @param layer
+function InputMgr:setFocusLayer(layer)
+    self.focusLayer = layer
+end
 
 ---
 -- If the user has pressed a key returns true.
@@ -101,10 +107,9 @@ function InputMgr:keyIsDown(key)
 end
 
 ---
--- Dispatch touch cancel event to all listeners, except the sender. 
+-- Dispatch touch cancel event to all listeners. 
 -- @param object Event touch begin or move event that should be cancelled
--- @param object TouchDispatcher sender of the event. This object will not receive cancel event
-function InputMgr:dispatchCancelEvent(touchEvent, object)
+function InputMgr:dispatchCancelEvent(touchEvent)
     local event = Event()
     table.merge(event, touchEvent)
     event.type = Event.TOUCH_CANCEL

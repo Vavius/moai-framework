@@ -24,11 +24,11 @@ function Display.Sprite(fileName, width, height)
     local properties
     if type(fileName) == 'table' then
         properties = fileName
-        fileName = properties['name']
+        fileName = properties['fileName']
         width = properties['width']
         height = properties['height']
 
-        properties['name'] = nil
+        properties['fileName'] = nil
         properties['width'] = nil
         properties['height'] = nil
     end

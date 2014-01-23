@@ -46,10 +46,28 @@ function Scene:open(params)
     self.opened = true
 end
 
-function Scene:addLayer(layer)
-    if table.insertIfAbsent(self.layers, layer) then
+---
+-- Insert layer to the render table at a given index. 
+-- @param layer
+-- @param index (optional) without index inserts layer at the last position
+function Scene:addLayer(layer, index)
+    if not table.includes(self.layers, layer) then
+        index = index or (1 + #self.layers)
+        index = math.clamp(index, 1, #self.layers + 1)
+        
+        table.insert(self.layers, index, layer)
         layer:setParent(self)
 
+        return true
+    end
+    return false
+end
+
+---
+-- Removes layer from render table
+function Scene:removeLayer(layer)
+    if table.removeElement(self.layers, layer) then
+        layer:setParent(nil)
         return true
     end
     return false

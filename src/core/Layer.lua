@@ -81,6 +81,10 @@ function TouchHandler:onTouch(e)
     if not self.touchLayer.touchEnabled then
         return
     end
+    
+    if InputMgr.focusLayer and InputMgr.focusLayer ~= self then
+        return
+    end 
 
     -- targeted prop
     local prop = self.touchProps[e.idx]
