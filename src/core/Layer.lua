@@ -51,11 +51,7 @@ local function propCanReceiveTouch(prop, wx, wy)
 
     if prop.scissorRect then
         local xMin, yMin, xMax, yMax = prop.scissorRect:getRect()
-        print(prop.scissorRect)
-        print(xMin, yMin, xMax, yMax)
-        xMin, yMin = prop.scissorRect:modelToWorld(xMin, yMin, 0)
-        xMax, yMax = prop.scissorRect:modelToWorld(xMax, yMax, 0)
-        print(wx, wy, xMin, yMin, xMax, yMax)
+        wx, wy = prop.scissorRect:worldToModel(wx, wy, 0)
         return (wx > xMin and wx < xMax) and (wy > yMin and wy < yMax)
     end
 

@@ -91,6 +91,7 @@ function TestScene:createScene()
         direction = Gui.ScrollView.BOTH, 
         layer = layer, 
     }
+    menu:seekLoc(100, 100, 0, 2)
 
     local topBtn = Button {
         normalSprite = Sprite("btn_buy.png"),
