@@ -317,7 +317,7 @@ function ResourceMgr:createAtlasDeck(luaFilePath)
 
         deck:setUVQuad(i, unpack(uv))
         deck.names[frame.name] = i
-        deck:setRect(i, r.x - 0.5 * b.width, r.y - 0.5 * b.height, r.x + r.width - 0.5 * b.width, r.y + r.height - 0.5 * b.height)
+        deck:setRect(i, r.x - 0.5 * b.width, 0.5 * b.height - r.height - r.y, r.x + r.width - 0.5 * b.width, 0.5 * b.height - r.y)
         boundsDeck:setBounds(i, -0.5 * b.width, -0.5 * b.height, 0, 0.5 * b.width, 0.5 * b.height, 0)
         boundsDeck:setIndex(i, i)
 

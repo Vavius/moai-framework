@@ -11,8 +11,33 @@ local DEFAULT_WINDOW = {
     screenHeight = MOAIEnvironment.verticalResolution or 960,
     viewWidth = 320,
     viewHeight = 480,
-    scaleMode = "letterbox",
+    scaleMode = "best_fit", -- "best_fit", "letterbox"
     viewOffset = {0, 0},
+}
+
+---
+-- Most common resolutions for mobile devices 
+-- Keys are resolution of longer side in pixels, values are view coordinates 
+-- Tried to keep view coords close to 320x480 and maintain 
+-- integer ratio at the same time 
+local mobileResolutions = {
+    -- apple
+    { [480]  = {480, 320} }, -- 480x320
+    { [960]  = {480, 320} }, -- 960x640
+    { [1136] = {568, 320} }, -- 1136x640
+    { [1024] = {512, 384} }, -- 1024x768
+    { [2048] = {512, 384} }, -- 2048x1536
+
+    -- use standard fallback for all androids, 
+    -- since there is no way to make integer ratios here =(
+    -- { [320]   = {480, 360} }, -- 320x240
+    -- { [400]   = {532, 320} }, -- 400x240
+    -- { [640]   = {568, 320} }, -- 640x360
+    -- { [800]   = {532, 320} }, -- 800x480
+    -- { [854]   = {568, 320} }, -- 854x480
+    -- { [960]   = {568, 320} }, -- 960x540
+    -- { [1280]  = {640, 360} }, -- 1280x720
+    -- { [1920]  = {568, 320} }, -- 1920x1080
 }
 
 ---
@@ -63,7 +88,21 @@ function App:updateVieport(params)
 
     local wRatio = self.screenWidth / width
     local hRatio = self.screenHeight / height
-    if params.scaleMode == "letterbox" then
+    
+    local view
+    if params.scaleMode == "best_fit" then
+        if self.screenWidth > self.screenHeight then
+            view = mobileResolutions[self.screenWidth]
+            self.viewWidth = view and view[1]
+            self.viewHeight = view and view[2]
+        else
+            view = mobileResolutions[self.screenHeight]
+            self.viewHeight = view and view[1]
+            self.viewWidth = view and view[2]
+        end
+    end
+    
+    if not view or params.scaleMode == "letterbox" then
         self.viewWidth = (wRatio > hRatio) and width * wRatio / hRatio or width
         self.viewHeight = (hRatio > wRatio) and height * hRatio / wRatio or height
     end

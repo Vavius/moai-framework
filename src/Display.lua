@@ -15,8 +15,8 @@ local PropertyUtils = require("util.PropertyUtils")
 ---
 -- Create MOAIProp with deck set to proper texture file
 -- @param   fileName    Texture name or sprite frame name
--- @param   width       (option) image width
--- @param   height      (option) image height
+-- @param   width       (option) image width. This will modify prop scale
+-- @param   height      (option) image height. This will modify prop scale
 -- 
 -- @overload
 -- @param   table       Properties
@@ -33,7 +33,7 @@ function Display.Sprite(fileName, width, height)
         properties['height'] = nil
     end
     
-    local deck = ResourceMgr:getImageDeck(fileName, width, height)
+    local deck = ResourceMgr:getImageDeck(fileName)
     if not deck then
         local atlas = ResourceMgr:getAtlasName(fileName)
         assert(atlas, "Image not found: " .. fileName)
@@ -44,6 +44,11 @@ function Display.Sprite(fileName, width, height)
     sprite:setDeck(deck)
     sprite.deck = deck
     sprite:setIndexByName(fileName)
+
+    local w, h = sprite:getDims()
+    local sx = width and width / w or 1
+    local sy = height and height / h or 1
+    sprite:setScl(sx, sy, 1)
     
     if properties then
         PropertyUtils.setProperties(sprite, properties, true)

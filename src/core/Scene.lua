@@ -31,14 +31,6 @@ function Scene:init(params)
     self:addEventListener(Event.TOUCH_UP, self.onTouch, self)
     self:addEventListener(Event.TOUCH_MOVE, self.onTouch, self)
     self:addEventListener(Event.TOUCH_CANCEL, self.onTouch, self)
-
-    self:setFinalizer(self.finalize)
-end
-
----
--- Finalizer. Called when MOAIProp (group suoer-class) gets GC'd
-function Scene:finalize()
-
 end
 
 ---
