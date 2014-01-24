@@ -75,7 +75,7 @@ end
 -- 
 -- 
 function Button:setActiveSprite(sprite)
-    if self.activeSprite
+    if self.activeSprite then
         self:removeChild(self.activeSprite)
         self.activeSprite = nil
     end
