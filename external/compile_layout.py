@@ -3,6 +3,14 @@
 import re, sys, os
 import argparse
 
+screenWidth = 640
+screenHeight = 1136
+
+def transformCoords(x, y):
+    x = x - 0.5 * screenWidth
+    y = y - 0.5 * screenHeight
+    return x, y
+
 def makeButton(name, file_name, x, y, width, height, flags): 
     sprites = 'normalSprite = Sprite("%s", %s, %s),' % (file_name, width, height)
     file_base, file_ext = os.path.splitext(file_name)
@@ -47,8 +55,8 @@ def generateLayout(file_in, file_out):
             layout.append(line.strip())
 
     header = """
-local Sprite = Gui.Sprite
-local Button = Display.Button
+local Button = Gui.Button
+local Sprite = Display.Sprite
 local Group = Display.Group
 
 local function layout(layer)
