@@ -116,6 +116,18 @@ function math.round(x, snap)
 end
 
 ---
+-- Returns random integer in [lower, bounds]
+-- @param lower
+-- @param upper
+local rand = MOAIMath and MOAIMath.randSFMT
+function math.randomInt(lower, upper)
+    if rand then
+        return math.round( rand(lower - 0.5, upper + 0.5), 1 )
+    end
+    return math.random(lower, upper)
+end
+
+---
 -- Returns whether a point inside given rect
 function math.inside(x, y, xMin, yMin, xMax, yMax)
     return x > xMin and x < xMax and y > yMin and y < yMax

@@ -13,7 +13,7 @@ local function MainLayout(layer, owner)
             Button {
                 name = 'btnLoadScene',
                 normalSprite = Sprite("btn_next.png"),
-                selectedSprite = Sprite("btn_next_active.png"),
+                activeSprite = Sprite("btn_next_active.png"),
                 label = Label("Load Scene", 200, 100, "Verdana.ttf", 24),
                 onClick = function(e) owner:onLoadSceneClick(e) end,
                 layer = layer,
@@ -22,7 +22,7 @@ local function MainLayout(layer, owner)
             Button {
                 name = 'btnLoadScene',
                 normalSprite = Sprite("btn_next.png"),
-                selectedSprite = Sprite("btn_next_active.png"),
+                activeSprite = Sprite("btn_next_active.png"),
                 label = Label("Load Scene", 200, 100, "Verdana.ttf", 24),
                 onClick = function(e) owner:onLoadSceneClick(e) end,
                 layer = layer,
@@ -31,7 +31,7 @@ local function MainLayout(layer, owner)
             Button {
                 name = 'btnLoadScene',
                 normalSprite = Sprite("btn_next.png"),
-                selectedSprite = Sprite("btn_next_active.png"),
+                activeSprite = Sprite("btn_next_active.png"),
                 label = Label("Load Scene", 200, 100, "Verdana.ttf", 24),
                 onClick = function(e) owner:onLoadSceneClick(e) end,
                 layer = layer,

@@ -32,7 +32,7 @@ function TestScene:init(params)
     
     local back = Gui.Button {
         normalSprite = Display.Sprite("btn_buy.png"),
-        selectedSprite = Display.Sprite("btn_buy_active.png"),
+        activeSprite = Display.Sprite("btn_buy_active.png"),
         label = Display.Label("Back", nil, nil, "Verdana.ttf", 24, {0,0,0,1}),
         onClick = function() 
             SceneMgr:popScene({transition = backTransition})

@@ -20,6 +20,10 @@ function Runtime:initialize()
         MOAIAppIOS.setListener(MOAIAppIOS.SESSION_START, self.onSessionStart)
         MOAIAppIOS.setListener(MOAIAppIOS.APP_OPENED_FROM_URL, self.onOpenedFromUrl)
         MOAIAppIOS.setListener(MOAIAppIOS.SESSION_END, self.onSessionEnd)
+    elseif MOAIAppAndroid then
+        MOAIAppAndroid.setListener(MOAIAppAndroid.SESSION_START, self.onSessionStart)
+        MOAIAppAndroid.setListener(MOAIAppAndroid.APP_OPENED_FROM_URL, self.onOpenedFromUrl)
+        MOAIAppAndroid.setListener(MOAIAppAndroid.SESSION_END, self.onSessionEnd)
     end
 
     MOAISim.setListener(MOAISim.EVENT_PAUSE, self.onPause)

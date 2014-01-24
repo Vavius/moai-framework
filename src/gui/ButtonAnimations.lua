@@ -66,13 +66,13 @@ local Scale  = class(AnimationBase)
 local ToggleFlip = class(AnimationBase)
 
 --- 
--- Toggle between normal, selected and disabled images
+-- Toggle between normal, active and disabled images
 -- 
 function Change:downAnimation(event)
     local button = event.target
     
-    if button.selectedSprite then
-        button.selectedSprite:setVisible(true)
+    if button.activeSprite then
+        button.activeSprite:setVisible(true)
         button.normalSprite:setVisible(false)
 
         if button.disabledSprite then
@@ -86,8 +86,8 @@ function Change:upAnimation(event)
 
     button.normalSprite:setVisible(true)
     
-    if button.selectedSprite then
-        button.selectedSprite:setVisible(false)
+    if button.activeSprite then
+        button.activeSprite:setVisible(false)
     end
 
     if button.disabledSprite then
@@ -102,8 +102,8 @@ function Change:disabledAnimation(event)
         button.disabledSprite:setVisible(true)
         button.normalSprite:setVisible(false)
     
-        if button.selectedSprite then
-            button.selectedSprite:setVisible(false)
+        if button.activeSprite then
+            button.activeSprite:setVisible(false)
         end
     end
 end
@@ -123,13 +123,13 @@ end
 
 -- Scale {
 --     duration = 0.5,
---     selectedEaseType = MOAIEaseType.BOUNCE_IN,
+--     activeEaseType = MOAIEaseType.BOUNCE_IN,
 --     normalEaseType = MOAIEaseType.BOUNCE_OUT,
---     selectedScale = 1.2,
+--     activeScale = 1.2,
 --     normalDuration = 0.2,
 -- }
 
-Scale.defaultSelectedScale = 1.2
+Scale.defaultActiveScale = 1.2
 Scale.defaultNormalScale = 1
 Scale.defaultDuration = 0.3
 
@@ -143,9 +143,9 @@ function Scale:downAnimation(event)
         target:setScl(self.normalScale or self.defaultNormalScale)
     end
 
-    local scl = self.selectedScale or self.defaultSelectedScale
-    local dur = self.selectedDuration or self.duration or self.defaultDuration
-    self.downAction = target:seekScl(scl, scl, 1, dur, self.selectedEaseType or self.easeType)
+    local scl = self.activeScale or self.defaultActiveScale
+    local dur = self.activeDuration or self.duration or self.defaultDuration
+    self.downAction = target:seekScl(scl, scl, 1, dur, self.activeEaseType or self.easeType)
 end
 
 function Scale:upAnimation(event)
@@ -154,7 +154,7 @@ function Scale:upAnimation(event)
     if self.downAction then
         self.downAction:stop()
         self.downAction = nil
-        target:setScl(self.selectedScale or self.defaultSelectedScale)
+        target:setScl(self.activeScale or self.defaultActiveScale)
     end
 
     local scl = self.normalScale or self.defaultNormalScale
@@ -170,11 +170,11 @@ end
 -- Color animation
 -- 
 -- Color.normalSpriteColor = {1, 1, 1, 1}
--- Color.selectedSpriteColor = {1, 1, 1, 1}
+-- Color.activeSpriteColor = {1, 1, 1, 1}
 -- Color.disabledSpriteColor = {1, 1, 1, 1}
 
 -- Color.normalTextColor = {0, 0, 0, 1}
--- Color.selectedTextColor = {0, 0, 0, 1}
+-- Color.activeTextColor = {0, 0, 0, 1}
 -- Color.disabledTextColor = {0, 0, 0, 1}
 
 function Color:downAnimation(event)

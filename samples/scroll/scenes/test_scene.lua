@@ -72,7 +72,7 @@ function TestScene:createScene()
     for i = 1, 10 do
         local button = Gui.Button {
             normalSprite = Sprite("btn_buy.png"),
-            selectedSprite = Sprite("btn_buy_active.png"),
+            activeSprite = Sprite("btn_buy_active.png"),
             label = Label("slideBottom", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
             onClick = function()
                 SceneMgr:pushScene("scenes.scroll_nest", {transition = "crossfade"})
@@ -95,7 +95,7 @@ function TestScene:createScene()
 
     local topBtn = Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("Top", nil, nil, "Verdana.ttf", 18, {0, 0, 0, 1}),
         layer = layer,
         loc = {-120, -220},
@@ -105,7 +105,7 @@ function TestScene:createScene()
 
     local bottomBtn = Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("Bottom", nil, nil, "Verdana.ttf", 18, {0, 0, 0, 1}),
         layer = layer,
         loc = {-40, -220},
@@ -115,7 +115,7 @@ function TestScene:createScene()
 
     local leftBtn = Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("Left", nil, nil, "Verdana.ttf", 18, {0, 0, 0, 1}),
         layer = layer,
         loc = {40, -220},
@@ -125,7 +125,7 @@ function TestScene:createScene()
 
     local rightBtn = Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("Right", nil, nil, "Verdana.ttf", 18, {0, 0, 0, 1}),
         layer = layer,
         loc = {120, -220},

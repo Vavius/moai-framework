@@ -18,7 +18,7 @@ local Button = class(UIObjectBase, Group)
 
 -- Button {
 --     normalSprite = Sprite("normal.png"),
---     selectedSprite = Sprite("selected.png"),
+--     activeSprite = Sprite("active.png"),
 --     disabledSprite = Sprite("disabled.png"),
 --     label = Label("Button", 200, 100, "Verdana.ttf", 24),
 --     onClick = function(e) print("click") end,
@@ -45,7 +45,7 @@ function Button:init(params)
 
     self:initEventListeners()
     self:setEnabled(true)
-    self:setSelected(false)
+    self:setActive(false)
 end
 
 
@@ -74,15 +74,15 @@ end
 ---
 -- 
 -- 
-function Button:setSelectedSprite(sprite)
-    if self.selectedSprite then
-        self:removeChild(self.selectedSprite)
-        self.selectedSprite = nil
+function Button:setActiveSprite(sprite)
+    if self.activeSprite
+        self:removeChild(self.activeSprite)
+        self.activeSprite = nil
     end
 
     if sprite then
         self:addChild(sprite)
-        self.selectedSprite = sprite
+        self.activeSprite = sprite
     end
 end
 
@@ -111,8 +111,8 @@ function Button:setSize(width, height)
         self.normalSprite:setBounds(-0.5 * width, -0.5 * height, 0, 0.5 * width, 0.5 * height, 0)
     end
 
-    if self.selectedSprite then
-        self.selectedSprite:setBounds(-0.5 * width, -0.5 * height, 0, 0.5 * width, 0.5 * height, 0)
+    if self.activeSprite then
+        self.activeSprite:setBounds(-0.5 * width, -0.5 * height, 0, 0.5 * width, 0.5 * height, 0)
     end
 end
 
@@ -147,8 +147,8 @@ end
 ---
 -- 
 -- 
-function Button:setSelected(value)
-    self.selected = value
+function Button:setActive(value)
+    self.active = value
 
     if value then
         self:dispatchEvent(UIEvent.DOWN)
@@ -213,7 +213,7 @@ function Button:onTouchDown(event)
     end
     self._touchDownIdx = event.idx
 
-    self:setSelected(true)
+    self:setActive(true)
 end
 
 ---
@@ -228,8 +228,8 @@ function Button:onTouchMove(event)
     
     local inside = self.normalSprite:inside(event.wx, event.wy, 0)
 
-    if inside ~= self.selected then
-        self:setSelected(inside)
+    if inside ~= self.active then
+        self:setActive(inside)
     end
 
     if inside then return end
@@ -248,7 +248,7 @@ function Button:onTouchUp(event)
     end
     self._touchDownIdx = nil
     
-    self:setSelected(false)
+    self:setActive(false)
 
     if not self.normalSprite:inside(event.wx, event.wy, 0) then
         return

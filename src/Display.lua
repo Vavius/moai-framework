@@ -101,7 +101,7 @@ end
 -- @param 
 function Display.Label(str, width, height, fontName, fontSize, color)
     local label = Display.TextBox(str, width, height, fontName, fontSize, color)
-    Display.FitLabelText(label)
+    Display.fitLabelText(label)
     return label
 end
 
@@ -111,7 +111,7 @@ end
 -- @param label
 -- @param decrement     font size decrement. By default is 2
 -- @return nil
-function Display.FitLabelText(label, decrement)
+function Display.fitLabelText(label, decrement)
     decrement = decrement or 2
 
     label:forceUpdate()

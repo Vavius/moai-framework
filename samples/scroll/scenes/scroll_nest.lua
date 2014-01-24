@@ -41,7 +41,7 @@ function TestScene:init(params)
     for i = 1, 5 do
         local button = Gui.Button {
             normalSprite = Sprite("btn_buy.png"),
-            selectedSprite = Sprite("btn_buy_active.png"),
+            activeSprite = Sprite("btn_buy_active.png"),
             label = Label("slideBottom", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
             onClick = function() 
                 SceneMgr:popScene({transition = backTransition})

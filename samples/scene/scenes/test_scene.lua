@@ -69,7 +69,7 @@ function TestScene:createScene()
 
     local fadeIn = Gui.Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("fadeIn", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
         onClick = function() 
             SceneMgr:pushScene("scenes.test_scene_1", 
@@ -81,7 +81,7 @@ function TestScene:createScene()
 
     local fadeOutIn = Gui.Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("fadeOutIn", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
         onClick = function() 
             SceneMgr:pushScene("scenes.test_scene_1", 
@@ -93,7 +93,7 @@ function TestScene:createScene()
 
     local crossfade = Gui.Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("crossfade", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
         onClick = function() 
             SceneMgr:pushScene("scenes.test_scene_1", 
@@ -105,7 +105,7 @@ function TestScene:createScene()
 
     local fromRight = Gui.Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("fromRight", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
         onClick = function() 
             SceneMgr:pushScene("scenes.test_scene_1", 
@@ -117,7 +117,7 @@ function TestScene:createScene()
 
     local fromLeft = Gui.Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("fromLeft", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
         onClick = function() 
             SceneMgr:pushScene("scenes.test_scene_1", 
@@ -129,7 +129,7 @@ function TestScene:createScene()
 
     local fromTop = Gui.Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("fromTop", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
         onClick = function() 
             SceneMgr:pushScene("scenes.test_scene_1", 
@@ -141,7 +141,7 @@ function TestScene:createScene()
 
     local fromBottom = Gui.Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("fromBottom", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
         onClick = function() 
             SceneMgr:pushScene("scenes.test_scene_1", 
@@ -153,7 +153,7 @@ function TestScene:createScene()
 
     local slideRight = Gui.Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("slideRight", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
         onClick = function() 
             SceneMgr:pushScene("scenes.test_scene_1", 
@@ -165,7 +165,7 @@ function TestScene:createScene()
 
     local slideLeft = Gui.Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("slideLeft", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
         onClick = function() 
             SceneMgr:pushScene("scenes.test_scene_1", 
@@ -177,7 +177,7 @@ function TestScene:createScene()
 
     local slideTop = Gui.Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("slideTop", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
         onClick = function() 
             SceneMgr:pushScene("scenes.test_scene_1", 
@@ -189,7 +189,7 @@ function TestScene:createScene()
 
     local slideBottom = Gui.Button {
         normalSprite = Sprite("btn_buy.png"),
-        selectedSprite = Sprite("btn_buy_active.png"),
+        activeSprite = Sprite("btn_buy_active.png"),
         label = Label("slideBottom", nil, nil, "Verdana.ttf", 18, {0,0,0,1}),
         onClick = function() 
             SceneMgr:pushScene("scenes.test_scene_1", 
