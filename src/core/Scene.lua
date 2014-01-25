@@ -2,7 +2,7 @@
 --
 --
 --
----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 local App               = require("core.App")
 local Group             = require("core.Group")
@@ -21,7 +21,6 @@ function Scene:init(params)
     Group.init(self, nil, App.screenWidth, App.screenHeight)
 
     self.layers = {}
-    self.isScene = true
     self.opened = false
     self.started = false
     self.sceneUpdateEnabled = false

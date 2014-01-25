@@ -28,8 +28,7 @@ local mobileResolutions = {
     { [1024] = {512, 384} }, -- 1024x768
     { [2048] = {512, 384} }, -- 2048x1536
 
-    -- use standard fallback for all androids, 
-    -- since there is no way to make integer ratios here =(
+    -- use standard fallback for all androids
     -- { [320]   = {480, 360} }, -- 320x240
     -- { [400]   = {532, 320} }, -- 400x240
     -- { [640]   = {568, 320} }, -- 640x360

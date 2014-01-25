@@ -10,10 +10,10 @@ ratio = 0.5
 def transformCoords(x, y, width, height):
     x = float(x) - 0.5 * screenWidth
     y = 0.5 * screenHeight - float(y)
-    return ratio * x, ratio * y, ratio * int(width), ratio * int(height)
+    return ratio * x, ratio * y, ratio * float(width), ratio * float(height)
 
 def makeButton(name, file_name, x, y, width, height, flags): 
-    sprites = 'normalSprite = Sprite("%s", %d, %d),' % (file_name, width, height)
+    sprites = 'normalSprite = Sprite("%s", %f, %f),' % (file_name, width, height)
     file_base, file_ext = os.path.splitext(file_name)
     if 'a' in flags: 
         sprites = sprites + '\n' + 16*' ' + 'activeSprite = Sprite("%s"),' % (file_base + '_active' + file_ext)
@@ -35,7 +35,7 @@ def makeSprite(name, file_name, x, y, width, height, flags):
             Sprite { 
                 name = "%s", fileName = "%s", 
                 loc = {%f, %f, 0}, 
-                width = %d, height = %d, 
+                width = %f, height = %f, 
             },
     """ % (name, file_name, x, y, width, height)
     return output
