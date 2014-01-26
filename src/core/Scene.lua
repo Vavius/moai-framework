@@ -13,6 +13,7 @@ local EventDispatcher   = require("core.EventDispatcher")
 local Scene = class(Group, EventDispatcher)
 
 Scene.TOUCH_EVENT = Event()
+Scene.isScene = true
 
 ---
 -- The constructor.

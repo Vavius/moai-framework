@@ -395,11 +395,9 @@ function ResourceMgr:createNineImageDeck(fileName)
 
     for i, row in ipairs(stretchRows) do
         deck:setRow(i, row.weight, row.stretch)
-        print(i, row.weight, row.stretch)
     end
     for i, column in ipairs(stretchColumns) do
         deck:setColumn(i, column.weight, column.stretch)
-        print(i, column.weight, column.stretch)
     end
 
     return deck

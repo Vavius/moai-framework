@@ -111,7 +111,6 @@ function SceneMgr:internalOpenScene(scene, params, currentCloseFlag)
     end
 
     local animation = params.transition
-    print(animation)
     if type(animation) == "string" then
         animation = SceneTransitions[animation]()
     end

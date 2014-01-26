@@ -7,6 +7,7 @@
 local ResourceMgr = require("core.ResourceMgr")
 local SceneMgr = require("core.SceneMgr")
 local Runtime = require("core.Runtime")
+local Scene = require("core.Scene")
 
 if MOAIEnvironment.documentDirectory then
     package.path = MOAIEnvironment.documentDirectory .. '/live_update/?.lua;' .. package.path
@@ -50,8 +51,7 @@ end
 -- If reloaded file is currently running scene - then restart it
 -- Files with scenes determined by their directory
 local function restartScene(requirePath)
-    local scenesDir = "scenes."
-    if requirePath:sub(1, #scenesDir) == scenesDir and SceneMgr.currentScene.name == requirePath then
+    if SceneMgr.currentScene.name == requirePath then
         try(function() SceneMgr:replaceScene(requirePath) end)
     end
 end
@@ -76,9 +76,9 @@ local function updateFile(relPath)
         package.loaded[requirePath] = nil
 
         -- check if file is parsable
-        local status = try(function() require(requirePath) end)
+        local status, result = try(function() require(requirePath) end)
 
-        if status then
+        if status and result and result.isScene then
             restartScene(requirePath)
         end
     end

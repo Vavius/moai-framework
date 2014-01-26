@@ -4,6 +4,7 @@ require("util.MOAIExtensions")
 require("util.util")
 
 App         = require("core.App")
+Animation   = require("core.Animation")
 Display     = require("Display")
 Executors   = require("core.Executors")
 Runtime     = require("core.Runtime")

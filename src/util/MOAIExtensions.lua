@@ -84,6 +84,11 @@ MOAIProp.extend (
                 self:setIndex(index)
             end
         end
+
+        -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+        function interface.setFlip ( self, x, y )
+            
+        end
     end
 )
 
