@@ -208,7 +208,7 @@ end
 function Button:onTouchDown(event)
     event:stop()
 
-    if self._touchDownIdx ~= nil then
+    if not self.enabled or self._touchDownIdx ~= nil then
         return
     end
     self._touchDownIdx = event.idx
