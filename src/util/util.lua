@@ -290,7 +290,7 @@ table.dup = function(source)
 end
 
 -- fisher-yates shuffle
-function table.shuffle(t)
+table.shuffle = function(t)
     local n = #t
     while n > 2 do
         local k = math.random(n)
