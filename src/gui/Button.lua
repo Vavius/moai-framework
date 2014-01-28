@@ -211,8 +211,12 @@ function Button:onTouchDown(event)
     if not self.enabled or self._touchDownIdx ~= nil then
         return
     end
-    self._touchDownIdx = event.idx
+    
+    if not self.normalSprite:inside(event.wx, event.wy, 0) then
+        return
+    end
 
+    self._touchDownIdx = event.idx
     self:setActive(true)
 end
 
@@ -227,7 +231,6 @@ function Button:onTouchMove(event)
     end
     
     local inside = self.normalSprite:inside(event.wx, event.wy, 0)
-
     if inside ~= self.active then
         self:setActive(inside)
     end
@@ -247,7 +250,6 @@ function Button:onTouchUp(event)
         return
     end
     self._touchDownIdx = nil
-    
     self:setActive(false)
 
     if not self.normalSprite:inside(event.wx, event.wy, 0) then
