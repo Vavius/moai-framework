@@ -102,17 +102,28 @@ function Button:setDisabledSprite(sprite)
 end
 
 ---
+-- Set hit area for button
+-- @param width
+-- @param height
 --
---
-function Button:setSize(width, height)
-    Group.setSize(self, width, height)
+-- @overload
+-- @param xMin
+-- @param yMin
+-- @apram xMax
+-- @param yMax
+function Button:setHitArea(width, height, xMax, yMax)
+    local xMin = xMax and width or -0.5 * width
+    local yMin = yMax and height or -0.5 * height
+    xMax = xMax or 0.5 * width
+    yMax = yMax or 0.5 * height
 
+    self:setBounds(xMin, yMin, xMax, yMax)
     if self.normalSprite then
-        self.normalSprite:setBounds(-0.5 * width, -0.5 * height, 0, 0.5 * width, 0.5 * height, 0)
+        self.normalSprite:setBounds(xMin, yMin, 0, xMax, yMax, 0)
     end
 
     if self.activeSprite then
-        self.activeSprite:setBounds(-0.5 * width, -0.5 * height, 0, 0.5 * width, 0.5 * height, 0)
+        self.activeSprite:setBounds(xMin, yMin, 0, xMax, yMax, 0)
     end
 end
 
