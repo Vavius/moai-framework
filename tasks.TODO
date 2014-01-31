@@ -14,16 +14,21 @@ Gui:
  ☐ dialog
  ✔ nine patch from atlas @done (14-01-20 11:43)
  ☐ progress bar
- ☐ layout generation from exported coordinates
+ ✔ layout generation from exported coordinates @done (14-01-30 13:25)
 
 Particles:
  ☐ Use Particle Helper
  ☐ 
 
 Sublime snippets:
- ☐ Scene file
- ☐ Layout file
- ☐ Layout elements: scroll view, dialog, group, button, progress bar
+ ✔ Scene file @done (14-01-30 13:25)
+ ✔ Layout file @done (14-01-30 13:25)
+ ✔ Layout elements: scroll view, dialog, group, button, progress bar @done (14-01-30 13:25)
 
-
-
+Sound Manager:
+ ☐ Pluggable sound engines (currently support only for Untz, but it may be deprecated in future releases of sdk)
+ ☐ cache
+ ☐ preload
+ ☐ streaming for bg music
+ ☐ free channel management
+ ☐ soundFx groups - for channel management
