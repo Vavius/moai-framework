@@ -86,7 +86,15 @@ function Executors.callLoopTime(time, func, ...)
     local timer = MOAITimer.new()
     timer:setMode(MOAITimer.LOOP)
     timer:setSpan(time) -- EVENT_TIMER_LOOP
-    timer:setListener(MOAITimer.EVENT_TIMER_BEGIN_SPAN, function() func(unpack(args)) end)
+    timer:setListener(MOAITimer.EVENT_TIMER_BEGIN_SPAN, 
+        function() 
+            if func(unpack(args)) then 
+                print("TIMER STOPPED!!!")
+                timer:stop() 
+            end 
+        end
+    )
+
     timer:start()
     return timer
 end

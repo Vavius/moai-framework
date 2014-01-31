@@ -104,7 +104,7 @@ end
 ---
 -- Remove the children.
 function Group:removeChildren()
-    local children = table.copy(self.children)
+    local children = table.dup(self.children)
     for i, child in ipairs(children) do
         self:removeChild(child)
     end
