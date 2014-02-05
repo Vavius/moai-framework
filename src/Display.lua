@@ -140,7 +140,7 @@ end
 -- @param table Properties
 function Display.Group(layer, width, height)
     local properties
-    if not layer.__class then
+    if layer and not layer.__class then
         properties = layer
         layer = properties['layer']
         width = properties['width']
