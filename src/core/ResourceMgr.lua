@@ -282,6 +282,7 @@ end
 
 ---
 -- Create the Deck for displaying TextureAtlas.
+-- Images ending with extension ".tile.*" treated as Grid tiles
 -- @param luaFilePath TexturePacker lua file path
 -- @return Texture atlas deck
 function ResourceMgr:createAtlasDeck(luaFilePath)
@@ -317,8 +318,14 @@ function ResourceMgr:createAtlasDeck(luaFilePath)
 
         deck:setUVQuad(i, unpack(uv))
         deck.names[frame.name] = i
-        deck:setRect(i, r.x - 0.5 * b.width, 0.5 * b.height - r.height - r.y, r.x + r.width - 0.5 * b.width, 0.5 * b.height - r.y)
-        boundsDeck:setBounds(i, -0.5 * b.width, -0.5 * b.height, 0, 0.5 * b.width, 0.5 * b.height, 0)
+
+        if string.find(frame.name, "%.tile%.[^%.]+$") then
+            deck:setRect(i, -0.5, -0.5, 0, 0.5, 0.5, 0)
+            boundsDeck:setBounds(i, -0.5, -0.5, 0, 0.5, 0.5, 0)
+        else
+            deck:setRect(i, r.x - 0.5 * b.width, 0.5 * b.height - r.height - r.y, r.x + r.width - 0.5 * b.width, 0.5 * b.height - r.y)
+            boundsDeck:setBounds(i, -0.5 * b.width, -0.5 * b.height, 0, 0.5 * b.width, 0.5 * b.height, 0)
+        end
         boundsDeck:setIndex(i, i)
 
         self:setAtlasForSprite(luaFilePath, frame.name)
