@@ -320,7 +320,7 @@ function ResourceMgr:createAtlasDeck(luaFilePath)
         deck.names[frame.name] = i
 
         if string.find(frame.name, "%.tile%.[^%.]+$") then
-            deck:setRect(i, -0.5, -0.5, 0, 0.5, 0.5, 0)
+            deck:setRect(i, -0.5, -0.5, 0.5, 0.5)
             boundsDeck:setBounds(i, -0.5, -0.5, 0, 0.5, 0.5, 0)
         else
             deck:setRect(i, r.x - 0.5 * b.width, 0.5 * b.height - r.height - r.y, r.x + r.width - 0.5 * b.width, 0.5 * b.height - r.y)
