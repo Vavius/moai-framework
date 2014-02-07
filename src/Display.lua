@@ -33,7 +33,12 @@ function Display.Sprite(fileName, width, height)
         properties['height'] = nil
     end
     
-    local deck = ResourceMgr:getImageDeck(fileName)
+    local deck
+    if string.endswith(fileName, ".9.png") then
+        deck = ResourceMgr:getNineImageDeck(fileName)
+    else
+        deck = ResourceMgr:getImageDeck(fileName)
+    end
     if not deck then
         local atlas = ResourceMgr:getAtlasName(fileName)
         assert(atlas, "Image not found: " .. fileName)

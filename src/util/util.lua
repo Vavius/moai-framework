@@ -134,6 +134,13 @@ function math.inside(x, y, xMin, yMin, xMax, yMax)
 end
 
 --------------------------------------------------------------------------------
+-- String extensions
+--------------------------------------------------------------------------------
+function string.endswith(s, send)
+    return #s >= #send and s:find(send, #s-#send+1, true) and true or false
+end
+
+--------------------------------------------------------------------------------
 -- Table extensions (lua-enumerable)
 --------------------------------------------------------------------------------
 table.includes = function(list, value)

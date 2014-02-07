@@ -46,6 +46,10 @@ function Label:init(text, width, height, font, textSize)
     self:setTextScale(1 / self.contentScale)
     self:setString(text)
 
+    if font.bmFont then
+        self:setShader(MOAIShaderMgr.getShader(MOAIShaderMgr.DECK2D_SHADER))
+    end
+
     if not width or not height then
         self:fitSize(#text, width, height)
     end

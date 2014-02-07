@@ -30,7 +30,7 @@ ResourceMgr.nineImageDecks = setmetatable({}, {__mode = "v"})
 ResourceMgr.spriteFrameAtlases = {}
 
 --- Default Texture filter
-local DEFAULT_TEXTURE_FILTER = MOAITexture.GL_LINEAR
+ResourceMgr.DEFAULT_TEXTURE_FILTER = MOAITexture.GL_LINEAR
 
 ---
 -- Constructor.
@@ -41,7 +41,7 @@ function _createTexture(path, filter)
 
     texture:load(path)
     texture.path = path
-    texture.filter = filter or DEFAULT_TEXTURE_FILTER
+    texture.filter = filter or ResourceMgr.DEFAULT_TEXTURE_FILTER
 
     if texture.filter then
         texture:setFilter(texture.filter)
@@ -55,8 +55,12 @@ end
 -- @param path Font path
 function _createFont(path)
     local font = MOAIFont.new()
-    font:load(path)
-    
+    if string.endswith(path, ".fnt") then
+        font:loadFromBMFont(path)
+        font.bmFont = true
+    else
+        font:load(path)
+    end
     font.path = path
     
     return font
