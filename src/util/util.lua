@@ -116,7 +116,7 @@ function math.round(x, snap)
 end
 
 ---
--- Returns random integer in [lower, bounds]
+-- Returns random integer in [lower, upper] bounds
 -- @param lower
 -- @param upper
 local rand = MOAIMath and MOAIMath.randSFMT
