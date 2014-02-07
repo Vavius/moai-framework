@@ -389,7 +389,7 @@ function ResourceMgr:createNineImageDeck(fileName)
     local stretchRows = _createStretchRowsOrColumns(image, imageLeft, imageRight, imageTop, imageBottom, true)
     local stretchColumns = _createStretchRowsOrColumns(image, imageLeft, imageRight, imageTop, imageBottom, false)
     local contentPadding = _getNineImageContentPadding(image, imageLeft, imageRight, imageTop, imageBottom)
-    local uvRect = {(imageLeft + 1) / imageWidth, (imageBottom + 1) / imageHeight, (imageRight - 1) / imageWidth, (imageTop - 1) / imageHeight}
+    local uvRect = {(imageLeft + 1) / imageWidth, (imageBottom - 1) / imageHeight, (imageRight - 1) / imageWidth, (imageTop + 1) / imageHeight}
 
     local deck = MOAIStretchPatch2D.new()
     deck.imageWidth = imageWidth
