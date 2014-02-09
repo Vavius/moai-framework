@@ -51,9 +51,9 @@ end
 -- If reloaded file is currently running scene - then restart it
 -- Files with scenes determined by their directory
 local function restartScene(requirePath)
-    if SceneMgr.currentScene.name == requirePath then
-        try(function() SceneMgr:replaceScene(requirePath) end)
-    end
+    -- if SceneMgr.currentScene.name == requirePath then
+    try(function() SceneMgr:replaceScene(SceneMgr.currentScene.name) end)
+    -- end
 end
 
 ---
@@ -78,9 +78,11 @@ local function updateFile(relPath)
         -- check if file is parsable
         local status, result = try(function() require(requirePath) end)
 
-        if status and result and result.isScene then
+        -- if status and result and result.isScene then
+        if status then
             restartScene(requirePath)
         end
+        -- end
     end
 
     if IMAGE_EXTENSIONS[ext] then
