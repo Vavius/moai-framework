@@ -57,6 +57,7 @@ function App:openWindow(title, windowParams)
     RenderMgr:initialize()
     InputMgr:initialize()
     SceneMgr:initialize()
+    SoundMgr:initialize()
 
     Runtime:addEventListener("resize", self.onResize, self)
 
