@@ -133,6 +133,13 @@ function math.inside(x, y, xMin, yMin, xMax, yMax)
     return x > xMin and x < xMax and y > yMin and y < yMax
 end
 
+
+---
+-- Linear interpolation
+function math.lerp(a, b, t)
+    return a + (b - a) * t
+end
+
 --------------------------------------------------------------------------------
 -- String extensions
 --------------------------------------------------------------------------------
