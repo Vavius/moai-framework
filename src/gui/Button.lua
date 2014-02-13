@@ -219,7 +219,12 @@ end
 function Button:onTouchDown(event)
     event:stop()
 
-    if not self.enabled or self._touchDownIdx ~= nil then
+    if self._touchDownIdx ~= nil then
+        return
+    end
+
+    if not self.enabled and not self.toggle then
+        print("not toggle")
         return
     end
     
