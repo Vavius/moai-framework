@@ -117,12 +117,12 @@ end
 
 ---
 -- Try to use smaller font size until all glyphs are visible. 
---  
+-- 
 -- @param label
--- @param decrement     font size decrement. By default is 2
+-- @param decrement     font size decrement
 -- @return nil
 function Display.fitLabelText(label, decrement)
-    decrement = decrement or 2
+    decrement = decrement or label.contentScale or 2
 
     label:forceUpdate()
 
