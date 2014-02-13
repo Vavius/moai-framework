@@ -31,8 +31,8 @@ function Runtime:initialize()
 end
 
 -- enter frame
-function Runtime.onEnterFrame()
-    Runtime:dispatchEvent(Event.ENTER_FRAME)
+function Runtime.onEnterFrame(dt)
+    Runtime:dispatchEvent(Event.ENTER_FRAME, dt)
 end
 
 -- view resize

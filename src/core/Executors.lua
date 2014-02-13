@@ -9,6 +9,8 @@ local Executors = {}
 ---
 -- Run the specified function in a loop in a coroutine, forever.
 -- If there is a return value of a function of argument, the loop is terminated.
+-- Time delta since last run is passed as the first param to the function. 
+-- All user-defined params passed after it. 
 -- @param func Target function.
 -- @param ... Arguments to be passed to the function.
 -- @return MOAICoroutine object
@@ -17,11 +19,12 @@ function Executors.callLoop(func, ...)
     local args = {...}
     thread:run(
     function()
+        local dt = MOAISim.getStep()
         while true do
-            if func(unpack(args)) then
+            if func(dt, unpack(args)) then
                 break
             end
-            coroutine.yield()
+            dt = coroutine.yield()
         end
     end
     )
