@@ -31,9 +31,10 @@ end
 ---
 -- Preload the sound.
 -- @param sound file path
+-- @param stream
 -- @return Sound object
-function SoundMgr:preloadEffect(filePath)
-    return self._soundEngine:getSound(filePath)
+function SoundMgr:preloadEffect(filePath, stream)
+    return self._soundEngine:getSound(filePath, stream)
 end
 
 ---
@@ -53,7 +54,7 @@ end
 -- @param volume 
 -- @param loop (optional) default is 'false'
 function SoundMgr:playMusic(sound, volume, loop)
-    return self._soundEngine:play(sound, volume, loop)
+    return self._soundEngine:play(sound, volume, loop, true)
 end
 
 ---
@@ -123,10 +124,16 @@ end
 ---
 -- Load the MOAIUntzSound.
 -- @param filePath file path.
+-- @param stream
 -- @return sound
-function UntzSoundEngine:loadSound(filePath)
+function UntzSoundEngine:loadSound(filePath, stream)
+    local intoMemory = true
+    if stream == true then
+        intoMemory = false
+    end
+
     local sound = MOAIUntzSound.new()
-    sound:load(filePath)
+    sound:load(filePath, intoMemory)
     sound:setVolume(1)
     sound:setLooping(false)
     return sound
@@ -135,12 +142,13 @@ end
 ---
 -- Return the MOAIUntzSound cached.
 -- @param filePath file path.
+-- @param stream
 -- @return sound
-function UntzSoundEngine:getSound(filePath)
+function UntzSoundEngine:getSound(filePath, stream)
     filePath = ResourceMgr:getResourceFilePath(filePath)
     
     if not self._soundMap[filePath] then
-        self._soundMap[filePath] = self:loadSound(filePath)
+        self._soundMap[filePath] = self:loadSound(filePath, stream)
     end
     
     return self._soundMap[filePath]
@@ -161,9 +169,10 @@ end
 -- @param sound file path or object.
 -- @param volume (Optional)volume. Default value is 1.
 -- @param looping (Optional)looping flag. Default value is 'false'.
+-- @param stream (Optional) streaming flag. Default is 'false'
 -- @return Sound object
-function UntzSoundEngine:play(sound, volume, looping)
-    sound = type(sound) == "string" and self:getSound(sound) or sound
+function UntzSoundEngine:play(sound, volume, looping, stream)
+    sound = type(sound) == "string" and self:getSound(sound, stream) or sound
     volume = volume or 1
     looping = looping and true or false
     

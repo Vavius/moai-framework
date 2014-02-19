@@ -17,7 +17,7 @@ local DEFAULT_WINDOW = {
 
 ---
 -- Most common resolutions for mobile devices 
--- Keys are resolution of longer side in pixels, values are view coordinates 
+-- Keys are resolution of longer side in pixels, values are view coordinates
 -- Tried to keep view coords close to 320x480 and maintain 
 -- integer ratio at the same time 
 local mobileResolutions = {

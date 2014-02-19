@@ -322,3 +322,28 @@ table.keys = function(source)
     return result
 end
 
+
+local function escape ( str )
+    if str then
+        -- convert line endings
+        str = string.gsub ( str, "\n", "\r\n" )        
+        -- escape all special characters
+        str = string.gsub ( str, "([^%w ])",
+            function ( c ) 
+                return string.format ( "%%%02X", string.byte ( c )) 
+            end
+        )
+        -- convert spaces to "+" symbols
+        str = string.gsub ( str, " ", "+" )
+    end    
+    return str
+end
+
+table.urlEncode = function(source)
+    local s = ""
+    for k, v in pairs ( source ) do
+        s = s .. "&" .. escape ( k ) .. "=" .. escape ( v )
+    end    
+    return string.sub ( s, 2 ) -- remove first '&'
+end
+
