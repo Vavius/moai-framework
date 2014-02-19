@@ -8,7 +8,7 @@ import collections
 def writeLuaMesh(vbo, ibo):
     vbo_t = "{"
     for vtx in vbo:
-        vbo_t += "%s,%s,%s,%s,%s," % (vtx[0] + vtx[1])
+        vbo_t += "%s,%s,%s,%s,%s,%s,%s,%s," % (vtx[0] + vtx[1] + vtx[2])
     vbo_t += '}'
 
     ibo_t = '{'
@@ -30,9 +30,11 @@ def packVBO(obj, groupName):
         for vtx in face:
             v_idx = int(vtx[0]) - 1
             uv_idx = int(vtx[1]) - 1
+            vn_idx = int(vtx[2]) - 1
             v = obj['vertices'][v_idx]
             uv = obj['uv'][uv_idx]
-            vtx_tuple = (v, uv)
+            vn = obj['normals'][vn_idx]
+            vtx_tuple = (v, vn, uv)
             vbo.add(vtx_tuple)
             ibo.append(vbo.index(vtx_tuple))
 
@@ -51,10 +53,13 @@ def readObj(input_file):
     """
     global currentGroup
     currentGroup = None
-    obj = {'vertices' : [], 'uv' : [], 'groups' : {}}
+    obj = {'vertices' : [], 'normals' : [], 'uv' : [], 'groups' : {}}
 
     def writeVertex(data):
         obj['vertices'].append(tuple(data[1:]))
+
+    def writeNormal(data):
+        obj['normals'].append(tuple(data[1:]))
 
     def writeUV(data):
         # flip v
@@ -77,6 +82,7 @@ def readObj(input_file):
 
     commands = {
         'v' : writeVertex,
+        'vn' : writeNormal,
         'vt' : writeUV,
         'g' : writeGroup,
         'f' : writeFace,

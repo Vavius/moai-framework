@@ -84,14 +84,19 @@ end
 function Change:upAnimation(event)
     local button = event.target
 
-    button.normalSprite:setVisible(true)
+    local showSprite = button.enabled and button.normalSprite or button.disabledSprite
+    local hideSprite = button.enabled and button.disabledSprite or button.normalSprite
+
+    if showSprite then
+        showSprite:setVisible(true)
+    end
     
     if button.activeSprite then
         button.activeSprite:setVisible(false)
     end
 
-    if button.disabledSprite then
-        button.disabledSprite:setVisible(false)
+    if hideSprite then
+        hideSprite:setVisible(false)
     end
 end
 
