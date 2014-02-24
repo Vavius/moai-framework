@@ -21,7 +21,7 @@ function SoundMgr:initialize(soundEngine)
         if soundEngine then
             self._soundEngine = soundEngine
         elseif MOAIUntzSystem then
-            self._soundEngine = UntzSoundEngine()
+            self._soundEngine = UntzSoundEngine(44100, 1000)
         else
             self._soundEngine = MockSoundEngine()
         end
