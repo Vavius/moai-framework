@@ -21,7 +21,7 @@ function SoundMgr:initialize(soundEngine)
         if soundEngine then
             self._soundEngine = soundEngine
         elseif MOAIUntzSystem then
-            self._soundEngine = UntzSoundEngine(44100, 1000)
+            self._soundEngine = UntzSoundEngine()
         else
             self._soundEngine = MockSoundEngine()
         end
@@ -101,10 +101,10 @@ UntzSoundEngine = class()
 SoundMgr.UntzSoundEngine = UntzSoundEngine
 
 --- sampleRate
-UntzSoundEngine.SAMPLE_RATE = nil
+UntzSoundEngine.SAMPLE_RATE = 44100
 
 --- numFrames
-UntzSoundEngine.NUM_FRAMES = nil
+UntzSoundEngine.NUM_FRAMES = 1000
 
 ---
 -- Constructor.
