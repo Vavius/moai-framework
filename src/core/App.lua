@@ -20,14 +20,16 @@ local DEFAULT_WINDOW = {
 -- Keys are resolution of longer side in pixels, values are view coordinates
 -- Tried to keep view coords close to 320x480 and maintain 
 -- integer ratio at the same time 
-local mobileResolutions = {
+local appleResolutions = {
     -- apple
     [480]  = {480, 320}, -- 480x320
     [960]  = {480, 320}, -- 960x640
     [1136] = {568, 320}, -- 1136x640
     [1024] = {512, 384}, -- 1024x768
-    [2048] = {512, 384}, -- 2048x1536
+    [2048] = {512, 384}, -- 2048x1536    
+}
 
+local androidResolutions = {
     -- use standard fallback for all androids
     -- { [320]   = {480, 360} }, -- 320x240
     -- { [400]   = {532, 320} }, -- 400x240
@@ -36,8 +38,10 @@ local mobileResolutions = {
     -- { [854]   = {568, 320} }, -- 854x480
     -- { [960]   = {568, 320} }, -- 960x540
     -- { [1280]  = {640, 360} }, -- 1280x720
-    -- { [1920]  = {568, 320} }, -- 1920x1080
+    -- { [1920]  = {568, 320} }, -- 1920x1080    
 }
+
+local mobileResolutions = MOAIAppIOS and appleResolutions or androidResolutions
 
 ---
 -- Create moai window
