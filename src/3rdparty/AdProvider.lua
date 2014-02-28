@@ -239,7 +239,7 @@ function PlayHaven:init(params)
     self.placement = placement or "all"
 
     if self.provider then
-        self.provider.init(appId, appSignature)
+        self.provider.init(appId, appSignature, self.placement)
         self.provider.setListener(self.provider.INTERSTITIAL_WILL_DISPLAY,  function() self:onWillShowInterstitial() end)
         self.provider.setListener(self.provider.INTERSTITIAL_DID_DISMISS,   function() self:onDidDismissInterstitial() end)
     end
