@@ -9,13 +9,15 @@ local AdProvider = require("AdProvider")
 
 local Ads = class()
 
+local HttpTask = MOAIHttpTaskNSURL or MOAIHttpTask or Mock("HttpTask mock")
+
 -- workaround lua bug with math.random
 math.random() math.random() math.random()
 
 ---
 -- Ads - class for ad rotation from several ad SDKs
 -- can receive weight config from remote server
-local DEFAULT_URL = "pnc.cloudteam.pro/app/ad_test/"
+local DEFAULT_URL = "http://pnc.cloudteam.pro/app/ad_test/"
 
 ---
 -- Supported providers list. Used as keys in configuration table
@@ -166,6 +168,7 @@ function Ads:updateWeights()
     httpTask:setVerb(HttpTask.HTTP_GET)
     httpTask:setCallback(function(task)
         local confStr = task:getString()
+        print(confStr)
         if confStr then
             local conf = MOAIJsonParser.decode(confStr)
             self:onConfigReceived(conf)
@@ -187,6 +190,7 @@ function Ads:validateConfig(config)
     local result = true
     local validConfig = table.dup(config)
 
+    print("validating config")
     if not config then
         print("Ads: config is nil")
         return false
@@ -210,11 +214,14 @@ end
 
 
 function Ads:applyConfig(config)
+    print("setting weights")
     for k, v in pairs(self.providers) do
         if config[k] then
+            print("new weight for ", k, config[k])
             v.weight = config[k]
             v.active = true
         else
+            print("disabling ", k)
             v.active = false
         end
     end
