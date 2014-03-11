@@ -158,6 +158,10 @@ function Display.Group(layer, width, height)
 
     local group = Group(layer, width, height)
     if properties then
+        if properties.children then
+            group:setChildren(unpack(properties.children))
+            properties.children = nil
+        end
         PropertyUtils.setProperties(group, properties, true)
     end
     return group
