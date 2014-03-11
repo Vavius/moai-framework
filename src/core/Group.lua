@@ -152,7 +152,7 @@ function Group:setPriority(priority, stride)
     local priority = priority or 0
     for i, v in ipairs(self.children) do
         local diff = v:setPriority(priority, stride)
-        priority = priority + diff or stride
+        priority = priority + (diff or stride)
     end
     return priority
 end
