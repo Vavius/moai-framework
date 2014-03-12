@@ -21,7 +21,7 @@ local Button = class(UIObjectBase, Group)
 --     activeSprite = Sprite("active.png"),
 --     disabledSprite = Sprite("disabled.png"),
 --     label = Label("Button", 200, 100, "Verdana.ttf", 24),
---     onClick = function(e) print("click") end,
+--     onClick = function(btn) print("click") end,
 --     animations = {ButtonAnimations.Bounce()},
 --     toggle = false,
 -- }
@@ -275,12 +275,12 @@ function Button:onTouchUp(event)
     if self.toggle then
         self:setEnabled(not self.enabled)
         if self.onToggle then
-            self.onToggle(self.enabled)
+            self.onToggle(self, self.enabled)
         end
     else
         self:dispatchEvent(UIEvent.CLICK)
         if self.onClick then
-            self.onClick()
+            self.onClick(self)
         end
     end
 end

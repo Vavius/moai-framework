@@ -148,16 +148,18 @@ end
 -- @param number stride
 -- @return number priority of the last child
 function Group:setPriority(priority, stride)
-    local stride = stride or 0
-
     local priority = priority or 0
-    local _priority = priority
+    if stride then
+        self.stride = stride
+    else
+        stride = self.stride or 1
+    end
     
     for i, v in ipairs(self.children) do
-        local diff = v:setPriority(priority, stride)
-        priority = priority + (diff or stride)
+        local last = v:setPriority(priority)
+        priority = stride + (last or priority)
     end
-    return priority - _priority
+    return priority - stride
 end
 
 return Group
