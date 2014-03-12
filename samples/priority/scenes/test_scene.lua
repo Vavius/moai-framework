@@ -65,7 +65,10 @@ function TestScene:createScene()
     local bg = Sprite("game_bg_iphone5.png")
     bg:setLayer(layer)
 
-    local menu = Display.Group(layer, 0, 0)
+    local grp = Display.Group(layer, 0, 0)
+    local menu = Display.Group(nil, 0, 0)
+
+    grp:addChild(menu)
 
     local y = -200
     for i = 1, 10 do
@@ -83,13 +86,10 @@ function TestScene:createScene()
             loc = {0, y, 0},
         }
         y = y + 40
-        if i == 3 then
-            btn:setPriority(1, 5)
-        end
         menu:addChild(btn)
     end
 
-    menu:setPriority(1, 2)
+    grp:setPriority(100)
 end
 
 
