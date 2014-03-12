@@ -116,6 +116,14 @@ function App:updateVieport(params)
     self.viewport:setSize(self.screenWidth, self.screenHeight)
     self.viewport:setScale(self.viewWidth, self.viewHeight)
     self.viewport:setOffset(params.viewOffset[1], params.viewOffset[2])
+
+    if (self.viewWidth == 320 and self.viewHeight == 568) or (self.viewWidth == 568 and self.viewHeight == 320) then
+        App.device = "iPhone5"
+    elseif (self.viewWidth == 320 and self.viewHeight == 480) or (self.viewWidth == 480 and self.viewHeight == 320) then
+        App.device = "iPhone4"
+    elseif (self.viewWidth == 384 and self.viewHeight == 512) or (self.viewWidth == 512 and self.viewHeight == 384) then
+        App.device = "iPad"
+    end
 end
 
 ---

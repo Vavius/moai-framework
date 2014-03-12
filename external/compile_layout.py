@@ -5,12 +5,20 @@ import argparse
 
 screenWidth = 640
 screenHeight = 1136
-ratio = 0.5
+targetWidth = 320
+targetHeight = 568
+offsetX = 0
+offsetY = 0
+
 
 def transformCoords(x, y, width, height):
+    global screenWidth, screenHeight, targetWidth, targetHeight, offsetX, offsetY
+
     x = float(x) - 0.5 * screenWidth
     y = 0.5 * screenHeight - float(y)
-    return ratio * x, ratio * y, ratio * float(width), ratio * float(height)
+    rx = float(targetWidth) / screenWidth
+    ry = float(targetHeight) / screenHeight
+    return offsetX + rx * x, offsetY + ry * y, rx * float(width), ry * float(height)
 
 def makeButton(name, file_name, x, y, width, height, flags): 
     sprites = 'normalSprite = Sprite("%s", %f, %f),' % (file_name, width, height)
@@ -73,20 +81,15 @@ end
 return layout
 """
 
-
 def generateLayout(file_in, file_out):
+    global screenWidth, screenHeight
+
     layout = []
     with open(file_in, "rU") as f:
         for line in f:
             layout.append(line.strip())
 
-    # screenWidth, screenHeight = layout.pop(0).split(',')
-    if screenWidth < 480:
-        ratio = 1
-    elif screenWidth < 1100:
-        ratio = 0.5
-    else:
-        ratio = 0.25
+    screenWidth, screenHeight = [int(x) for x in layout.pop(0).split(',')]
 
     group = ""
     for line in layout:
@@ -109,13 +112,23 @@ def generateLayout(file_in, file_out):
         f.write(output)
 
 def main():
+    global screenWidth, screenHeight, offsetX, offsetY, targetWidth, targetHeight
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--out', help="Output file", default = "out.lua")
+    parser.add_argument('-width', help="Target width (in virtual coordinates)", default = 320, type=int)
+    parser.add_argument('-height', help="Target height (in virtual coordinates)", default = 568, type=int)
+    parser.add_argument('-ox', '--offsetX', help="Canvas offset X (in virtual coordinates)", default = 0, type=int)
+    parser.add_argument('-oy', '--offsetY', help="Canvas offset Y (in virtual coordinates)", default = 0, type=int)
     parser.add_argument('file', help="Input file")
     args = parser.parse_args()
 
     output_file = args.out
     input_file = args.file
+    offsetX = args.offsetX
+    offsetY = args.offsetY
+    targetWidth = args.width
+    targetHeight = args.height
 
     generateLayout(input_file, output_file)
 
