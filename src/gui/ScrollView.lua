@@ -40,8 +40,7 @@ ScrollView.CENTER = "center"
 --      contentRect = {xMin, yMin, xMax, yMax},-- size of the scroll container, defines scroll bounds
 --      damping = 0.95,
 --      maxVelocity = 20,
---      minVelocity = 0.1,
---      rubberEffectDamping = 0.9,
+--      minVelocity = 0.3,
 --      rubberEffect = false,
 --      direction = ScrollView.HORIZONTAL, -- ScrollView.VERTICAL, ScrollView.BOTH
 -- }
@@ -58,12 +57,11 @@ local CIRCULAR_ARRAY_DEFAULT_CAPACITY = 4
 local SCROLL_PARAMS = {
     damping = 0.9,
     maxVelocity = 20,
-    minVelocity = 0.1,
+    minVelocity = 0.3,
     xScrollEnabled = true,
     yScrollEnabled = true,
     direction = ScrollView.BOTH,
     rubberEffect = true,
-    rubberEffectDamping = 0.9,
     touchDistanceToSlide = 15,
     padding = {10, 10, 10, 10},
     snapOffsetX = 0,
@@ -141,10 +139,11 @@ function CircularArray:average()
     end
 end
 
-
+local atan = math.atan
 local function attenuation(distance)
-    distance = distance < 1 and 1 or math.pow(distance/2, 0.667)
-    return 1 / distance
+    return 4 * atan(0.25 * distance) / distance
+    -- distance = distance < 1 and 1 or math.pow(distance/2, 0.667)
+    -- return 1 / distance
 end
 
 --------------------------------------------------------------------------------
@@ -425,8 +424,12 @@ end
 
 function ScrollView:applyOffset(dx, dy)
     local xOk, yOk, xOffset, yOffset = self:checkBounds(dx, dy)
-    if self._touchIdx and not xOk then dx = attenuation(math.abs(xOffset)) * dx end
-    if self._touchIdx and not yOk then dy = attenuation(math.abs(yOffset)) * dy end
+    if self._touchIdx and not xOk then 
+        dx = self.rubberEffect and attenuation(math.abs(xOffset)) * dx or (dx + xOffset)
+    end
+    if self._touchIdx and not yOk then 
+        dy = self.rubberEffect and attenuation(math.abs(yOffset)) * dy or (dy + yOffset)
+    end
 
     if self.xScrollEnabled then
         self._scrollPositionX = self._scrollPositionX + dx
@@ -502,24 +505,38 @@ function ScrollView:startKineticScroll()
     end
 
     self._curScrollThread = Executors.callLoop(function()
-        local xOk, yOk = self:checkBounds(0, 0)
+        local dx = self._currentVelocityX
+        local dy = self._currentVelocityY
+        local xOk, yOk, xOffset, yOffset = self:checkBounds(dx, dy)
         
-        xOk = self.xScrollEnabled and (xOk and math.abs(self._currentVelocityX) > self.minVelocity)
-        yOk = self.yScrollEnabled and (yOk and math.abs(self._currentVelocityY) > self.minVelocity)
+        local xReadyToRubber = not self.xScrollEnabled or (math.abs(dx) < self.minVelocity and not xOk)
+        local yReadyToRubber = not self.yScrollEnabled or (math.abs(dy) < self.minVelocity and not yOk)
 
-        if not xOk and not yOk then
+        if xReadyToRubber and yReadyToRubber then
             self:startRubberEffect()
             return true
         end
 
         if self.xScrollEnabled then
-            self._currentVelocityX = self.damping * self._currentVelocityX * (xOk and 1 or self.rubberEffectDamping)
-            self._scrollPositionX = self._scrollPositionX + self._currentVelocityX
+            self._currentVelocityX = self.damping * dx
+            if not xOk then
+                local att = attenuation(math.abs(xOffset))
+                self._currentVelocityX = dx * att
+                self._scrollPositionX = self._scrollPositionX + (self.rubberEffect and self._currentVelocityX or (dx + xOffset))
+            else
+                self._scrollPositionX = self._scrollPositionX + dx
+            end
         end
 
         if self.yScrollEnabled then
-            self._currentVelocityY = self.damping * self._currentVelocityY * (yOk and 1 or self.rubberEffectDamping)
-            self._scrollPositionY = self._scrollPositionY + self._currentVelocityY
+            self._currentVelocityY = self.damping * dy
+            if not yOk then
+                local att = attenuation(math.abs(yOffset))
+                self._currentVelocityY = dy * att
+                self._scrollPositionY = self._scrollPositionY + (self.rubberEffect and self._currentVelocityY or (dy + yOffset))
+            else
+                self._scrollPositionY = self._scrollPositionY + dy
+            end
         end
         
         self:updatePosition()
@@ -531,6 +548,13 @@ function ScrollView:startRubberEffect()
     
     local x = self._scrollPositionX + xOffset
     local y = self._scrollPositionY + yOffset
+
+    if not self.rubberEffect then
+        self._scrollPositionX = x
+        self._scrollPositionY = y
+        self:updatePosition()
+        return
+    end    
 
     if self.snapDistanceX then
         local velOffset = self._currentVelocityX / (1 - self.damping)
