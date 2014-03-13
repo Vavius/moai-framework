@@ -11,7 +11,7 @@ local DEFAULT_WINDOW = {
     screenHeight = MOAIEnvironment.verticalResolution or 960,
     viewWidth = 320,
     viewHeight = 480,
-    scaleMode = "best_fit", -- "best_fit", "letterbox"
+    scaleMode = "best_fit", -- "best_fit", "letterbox", "manual"
     viewOffset = {0, 0},
 }
 
@@ -109,6 +109,11 @@ function App:updateVieport(params)
     if not view or params.scaleMode == "letterbox" then
         self.viewWidth = (wRatio > hRatio) and width * wRatio / hRatio or width
         self.viewHeight = (hRatio > wRatio) and height * hRatio / wRatio or height
+    end
+
+    if params.scaleMode == "manual" then
+        self.viewWidth = params.viewWidth
+        self.viewHeight = params.viewHeight
     end
 
     self.windowParams = params

@@ -75,7 +75,7 @@ end
 -- @param threshold (option) when viewport scale is bigger than threshold, this directory will have a priority over another
 function ResourceMgr:addResourceDirectory(path, scale, threshold)
     scale = scale or 1
-    threshold = threshold or scale
+    threshold = threshold or 0
     local dirInfo = {path = path, scale = scale, threshold = threshold}
     
     table.push(self.resourceDirectories, dirInfo)
