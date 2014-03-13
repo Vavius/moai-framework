@@ -154,6 +154,9 @@ function SceneMgr:closeScene(params, backCount)
     -- set next scene
     self.nextScene = self.scenes[#self.scenes - backCount]
     self.nextSceneIndex = table.indexOf(self.scenes, self.nextScene)
+    if self.nextScene then
+        self.nextScene:dispatchEvent(Event.WILL_ENTER, params)
+    end
 
     -- set closing scenes
     self.closingSceneSize = #self.scenes - self.nextSceneIndex
@@ -182,6 +185,7 @@ function SceneMgr:closeScene(params, backCount)
 
         if self.currentScene then
             self.currentScene:start(params)
+            self.currentScene:dispatchEvent(Event.ENTER, params)
         end
     end
 
