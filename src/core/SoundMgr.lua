@@ -101,10 +101,10 @@ UntzSoundEngine = class()
 SoundMgr.UntzSoundEngine = UntzSoundEngine
 
 --- sampleRate
-UntzSoundEngine.SAMPLE_RATE = 44100
+UntzSoundEngine.SAMPLE_RATE = nil
 
 --- numFrames
-UntzSoundEngine.NUM_FRAMES = 1000
+UntzSoundEngine.NUM_FRAMES = nil
 
 ---
 -- Constructor.
