@@ -11,7 +11,7 @@ local DEFAULT_WINDOW = {
     screenHeight = MOAIEnvironment.verticalResolution or 960,
     viewWidth = 320,
     viewHeight = 480,
-    scaleMode = "best_fit", -- "best_fit", "letterbox"
+    scaleMode = "best_fit", -- "best_fit", "letterbox", "manual"
     viewOffset = {0, 0},
 }
 
@@ -26,7 +26,7 @@ local appleResolutions = {
     [960]  = {480, 320}, -- 960x640
     [1136] = {568, 320}, -- 1136x640
     [1024] = {512, 384}, -- 1024x768
-    [2048] = {512, 384}, -- 2048x1536    
+    [2048] = {512, 384}, -- 2048x1536
 }
 
 local androidResolutions = {
@@ -111,11 +111,24 @@ function App:updateVieport(params)
         self.viewHeight = (hRatio > wRatio) and height * hRatio / wRatio or height
     end
 
+    if params.scaleMode == "manual" then
+        self.viewWidth = params.viewWidth
+        self.viewHeight = params.viewHeight
+    end
+
     self.windowParams = params
     self.viewport = self.viewport or MOAIViewport.new()
     self.viewport:setSize(self.screenWidth, self.screenHeight)
     self.viewport:setScale(self.viewWidth, self.viewHeight)
     self.viewport:setOffset(params.viewOffset[1], params.viewOffset[2])
+
+    if (self.viewWidth == 320 and self.viewHeight == 568) or (self.viewWidth == 568 and self.viewHeight == 320) then
+        App.device = "iphone5"
+    elseif (self.viewWidth == 320 and self.viewHeight == 480) or (self.viewWidth == 480 and self.viewHeight == 320) then
+        App.device = "iphone4"
+    elseif (self.viewWidth == 384 and self.viewHeight == 512) or (self.viewWidth == 512 and self.viewHeight == 384) then
+        App.device = "ipad"
+    end
 end
 
 ---

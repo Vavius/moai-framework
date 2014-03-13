@@ -142,13 +142,24 @@ function Group:setLayer(layer)
 end
 
 ---
--- Sets the group's priority.
--- Also sets the priority of any children.
--- @param priority priority
--- function Group:setPriority(priority)
---     for i, v in ipairs(self.children) do
---         v:setPriority(priority)
---     end
--- end
+-- Sets the group's priority. 
+-- Also sets the priority of any children. 
+-- @param number priority
+-- @param number stride
+-- @return number priority of the last child
+function Group:setPriority(priority, stride)
+    local priority = priority or 0
+    if stride then
+        self.stride = stride
+    else
+        stride = self.stride or 1
+    end
+    
+    for i, v in ipairs(self.children) do
+        local last = v:setPriority(priority)
+        priority = stride + (last or priority)
+    end
+    return priority - stride
+end
 
 return Group
