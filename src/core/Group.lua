@@ -162,4 +162,17 @@ function Group:setPriority(priority, stride)
     return priority - stride
 end
 
+---
+-- Call given function for each child
+-- @param function function to call. This function recieves child as argument
+-- @param bool recursive whether to call this function on nested groups recursively
+function Group:forEach(func, recursive)
+    for i, child in ipairs(self.children) do
+        func(child)
+        if recursive and child.forEach then
+            child.forEach(func, recursive)
+        end
+    end
+end
+
 return Group

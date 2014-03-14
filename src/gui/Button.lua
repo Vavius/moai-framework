@@ -224,7 +224,6 @@ function Button:onTouchDown(event)
     end
 
     if not self.enabled and not self.toggle then
-        print("not toggle")
         return
     end
     
