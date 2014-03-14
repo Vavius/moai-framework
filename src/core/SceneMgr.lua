@@ -91,6 +91,7 @@ function SceneMgr:internalOpenScene(scene, params, currentCloseFlag)
     -- stop
     if self.currentScene then
         self.currentScene:stop(params)
+        self.currentScene:dispatchEvent(Event.EXIT, params)
     end
 
     -- create next scene
@@ -99,15 +100,19 @@ function SceneMgr:internalOpenScene(scene, params, currentCloseFlag)
     self:addScene(self.nextScene)
 
     local function onTransitionFinished()
-        if self.currentScene and currentCloseFlag then
-            self.currentScene:close(params)
-            self:removeScene(self.currentScene)
+        if self.currentScene then
+            self.currentScene:dispatchEvent(Event.DID_EXIT, params)
+            if currentCloseFlag then
+                self.currentScene:close(params)
+                self:removeScene(self.currentScene)
+            end
         end
 
         self.currentScene = self.nextScene
         self.nextScene = nil
         self.transitioning = false
         self.currentScene:start(params)
+        self.currentScene:dispatchEvent(Event.ENTER, params)
     end
 
     local animation = params.transition
@@ -115,6 +120,7 @@ function SceneMgr:internalOpenScene(scene, params, currentCloseFlag)
         animation = SceneTransitions[animation]()
     end
 
+    self.nextScene:dispatchEvent(Event.WILL_ENTER, params)
     if animation then
         Executors.callOnce(
         function()
@@ -148,6 +154,9 @@ function SceneMgr:closeScene(params, backCount)
     -- set next scene
     self.nextScene = self.scenes[#self.scenes - backCount]
     self.nextSceneIndex = table.indexOf(self.scenes, self.nextScene)
+    if self.nextScene then
+        self.nextScene:dispatchEvent(Event.WILL_ENTER, params)
+    end
 
     -- set closing scenes
     self.closingSceneSize = #self.scenes - self.nextSceneIndex
@@ -159,9 +168,10 @@ function SceneMgr:closeScene(params, backCount)
 
     -- stop current scene
     self.currentScene:stop(params)
+    self.currentScene:dispatchEvent(Event.EXIT, params)
 
     local function onTransitionFinished()
-
+        self.currentScene:dispatchEvent(Event.DID_EXIT, params)
         for i, scene in ipairs(self.closingSceneGroup.children) do
             scene:close(params)
             self:removeScene(scene)
@@ -175,6 +185,7 @@ function SceneMgr:closeScene(params, backCount)
 
         if self.currentScene then
             self.currentScene:start(params)
+            self.currentScene:dispatchEvent(Event.ENTER, params)
         end
     end
 
@@ -182,7 +193,7 @@ function SceneMgr:closeScene(params, backCount)
     if type(animation) == "string" then
         animation = SceneTransitions[animation]()
     end
-
+    
     if animation then
         Executors.callOnce(
         function()
@@ -191,7 +202,7 @@ function SceneMgr:closeScene(params, backCount)
             onTransitionFinished()
         end
         )
-    else
+    else    
         onTransitionFinished()
     end
 end

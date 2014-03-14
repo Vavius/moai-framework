@@ -455,11 +455,10 @@ animCurveX:reserveKeys(2)
 animCurveY:reserveKeys(2)
 
 function ScrollView:scrollToPosition(newX, newY, time, ease)
-    time = time or 0.1 * math.distance(newX, newY, self._scrollPositionX, self._scrollPositionY)
+    time = time or (1 / 6 + 1 / 600 * math.distance(newX, newY, self._scrollPositionX, self._scrollPositionY))
     ease = ease or MOAIEaseType.SOFT_EASE_IN
     newX = newX or self._scrollPositionX
     newY = newY or self._scrollPositionY
-
     if self._curScrollThread then
         self._curScrollThread:stop()
         self._curScrollThread = nil
@@ -468,11 +467,14 @@ function ScrollView:scrollToPosition(newX, newY, time, ease)
     if time == 0 then
         self._scrollPositionX = newX
         self._scrollPositionY = newY
+        local yOk, xOk, offsetX, offsetY = self:checkBounds()
+        self._scrollPositionX = newX + offsetX
+        self._scrollPositionY = newY + offsetY
         self:updatePosition()
         return
     end
 
-    local animLength = 10 + time
+    local animLength = math.ceil(MOAISim.timeToFrames(time))
     animCurveX:setKey(1, 0, self._scrollPositionX, ease)
     animCurveX:setKey(2, animLength, newX)
 
@@ -482,9 +484,15 @@ function ScrollView:scrollToPosition(newX, newY, time, ease)
     local thread = MOAICoroutine.new()
     thread:run(
         function ()
+            local xOk, yOk, offsetX, offsetY
             for f = 1, animLength do
                 self._scrollPositionX = animCurveX:getValueAtTime(f)
                 self._scrollPositionY = animCurveY:getValueAtTime(f)
+                
+                yOk, xOk, offsetX, offsetY = self:checkBounds()
+                
+                self._scrollPositionX = self._scrollPositionX + offsetX
+                self._scrollPositionY = self._scrollPositionY + offsetY
                 self:updatePosition()
                 coroutine.yield()
             end

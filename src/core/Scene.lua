@@ -35,14 +35,12 @@ end
 
 ---
 -- Open the scene.
--- Scenes add themselves to the SceneMgr when opened.
 -- @param params Scene event parameters.(event.data)
 function Scene:open(params)
     if self.opened then
         return
     end
     
-    self:dispatchEvent(Event.WILL_ENTER, params)
     self.opened = true
 end
 
@@ -83,7 +81,6 @@ function Scene:close(params)
 
     self:stop()
     self.opened = false
-    self:dispatchEvent(Event.DID_EXIT, params)
 end
 
 ---
@@ -94,7 +91,7 @@ function Scene:start(params)
     if self.started or not self.opened then
         return
     end
-    self:dispatchEvent(Event.ENTER, params)
+    
     self.started = true
     self.paused = false
     self.sceneUpdateEnabled = true
@@ -109,7 +106,7 @@ function Scene:stop(params)
     if not self.started then
         return
     end
-    self:dispatchEvent(Event.EXIT, params)
+    
     self.started = false
     self.sceneUpdateEnabled = false
     self.sceneTouchEnabled = false
