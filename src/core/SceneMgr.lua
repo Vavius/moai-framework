@@ -98,10 +98,12 @@ function SceneMgr:internalOpenScene(scene, params, currentCloseFlag)
     self.nextScene = scene
     self.nextScene:open(params)
     self:addScene(self.nextScene)
+    self:addSceneToRenderTable(self.nextScene)
 
     local function onTransitionFinished()
         if self.currentScene then
             self.currentScene:dispatchEvent(Event.DID_EXIT, params)
+            self:removeSceneFromRenderTable(self.currentScene)
             if currentCloseFlag then
                 self.currentScene:close(params)
                 self:removeScene(self.currentScene)
@@ -175,6 +177,7 @@ function SceneMgr:closeScene(params, backCount)
         for i, scene in ipairs(self.closingSceneGroup.children) do
             scene:close(params)
             self:removeScene(scene)
+            self:removeSceneFromRenderTable(scene)
         end
 
         self.closingSceneGroup = nil
@@ -184,6 +187,7 @@ function SceneMgr:closeScene(params, backCount)
         self.transitioning = false
 
         if self.currentScene then
+            self:addSceneToRenderTable(self.currentScene)
             self.currentScene:start(params)
             self.currentScene:dispatchEvent(Event.ENTER, params)
         end
@@ -209,11 +213,17 @@ end
 
 function SceneMgr:addScene(scene)
     table.insertIfAbsent(self.scenes, scene)
-    table.insertIfAbsent(self.renderTable, scene.layers)
 end
 
 function SceneMgr:removeScene(scene)
     table.removeElement(self.scenes, scene)
+end
+
+function SceneMgr:addSceneToRenderTable(scene)
+    table.insertIfAbsent(self.renderTable, scene.layers)
+end
+
+function SceneMgr:removeSceneFromRenderTable(scene)
     table.removeElement(self.renderTable, scene.layers)
 end
 
