@@ -80,6 +80,10 @@ function ResourceMgr:addResourceDirectory(path, scale, threshold)
     
     table.push(self.resourceDirectories, dirInfo)
     table.sort(self.resourceDirectories, function(a, b) return a.threshold > b.threshold end)
+
+    -- for i, j in pairs(self.resourceDirectories) do 
+    --     print(i, j.path, j.scale, j.threshold)
+    -- end
 end
 
 ---
@@ -96,9 +100,11 @@ function ResourceMgr:getResourceFilePath(fileName)
         return fileName, 1
     end
 
+    
     local scaleFactor = App:getContentScale() or 1
     for i, pathInfo in ipairs(self.resourceDirectories) do
         if pathInfo.threshold <= scaleFactor then
+            
             local filePath = pathInfo.path .. "/" .. fileName
             if MOAIFileSystem.checkFileExists(filePath) then
                 self.filepathCache[fileName] = {filePath, pathInfo.scale}
