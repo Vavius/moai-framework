@@ -48,11 +48,25 @@ def makeSprite(name, file_name, x, y, width, height, flags):
     """ % (name, file_name, x, y, width, height)
     return output
 
+def makeLabel(name, file_name, x, y, width, height, flags): 
+    output = """
+            Label { 
+                name = "%s", 
+                loc = {%f, %f, 0}, 
+                width = %f, height = %f, 
+                fontName = fontName,
+                fontSize = fontSize,
+            },
+    """ % (name, x, y, width, height)
+    return output
+
+
 
 
 lua_guiclass_factory = {
     'btn' : makeButton,
     'spr' : makeSprite,
+    'lbl' : makeLabel,
 }
 
 
@@ -67,7 +81,7 @@ local Button = Gui.Button
 local Sprite = Display.Sprite
 local Group = Display.Group
 
-local function layout(layer)
+local function layout(layer, fontName, fontSize)
     local group = Group {
         layer = layer,
         children = {
