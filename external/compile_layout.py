@@ -56,6 +56,7 @@ def makeLabel(name, file_name, x, y, width, height, flags):
                 width = %f, height = %f, 
                 fontName = fontName,
                 fontSize = fontSize,
+                text = "",
             },
     """ % (name, x, y, width, height)
     return output
@@ -80,6 +81,7 @@ body = """----------------------------------------------------------------------
 local Button = Gui.Button
 local Sprite = Display.Sprite
 local Group = Display.Group
+local Label = Display.Label
 
 local function layout(layer, fontName, fontSize)
     local group = Group {

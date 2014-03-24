@@ -99,7 +99,6 @@ function ResourceMgr:getResourceFilePath(fileName)
         self.filepathCache[fileName] = {fileName, 1} 
         return fileName, 1
     end
-
     
     local scaleFactor = App:getContentScale() or 1
     for i, pathInfo in ipairs(self.resourceDirectories) do
