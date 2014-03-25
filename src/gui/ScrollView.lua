@@ -42,6 +42,7 @@ ScrollView.CENTER = "center"
 --      maxVelocity = 20,
 --      minVelocity = 0.3,
 --      rubberEffect = false,
+--      rubberEffectStrength = 4,
 --      direction = ScrollView.HORIZONTAL, -- ScrollView.VERTICAL, ScrollView.BOTH
 -- }
 -- 
