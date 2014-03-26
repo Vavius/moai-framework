@@ -68,6 +68,7 @@ end
 -- @param points points
 -- @param dpi (Option)dpi
 function Label:setTextSize(points)
+    self.textSize = points
     MOAITextBoxInterface.setTextSize(self, self.textSize * self.contentScale)
 end
 

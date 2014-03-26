@@ -77,14 +77,14 @@ function Display.TextBox(str, width, height, fontName, fontSize, color)
     local properties
     if type(str) == 'table' then
         properties = str
-        str = properties['text']
+        str = properties['string']
         width = properties['width']
         height = properties['height']
         fontName = properties['fontName']
         fontSize = properties['fontSize']
         color = properties['color']
 
-        properties['text'] = nil
+        properties['string'] = nil
         properties['width'] = nil
         properties['height'] = nil
         properties['fontName'] = nil
