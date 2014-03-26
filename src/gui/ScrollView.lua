@@ -456,10 +456,10 @@ animCurveX:reserveKeys(2)
 animCurveY:reserveKeys(2)
 
 function ScrollView:scrollToPosition(newX, newY, time, ease)
-    time = time or (1 / 6 + 1 / 600 * math.distance(newX, newY, self._scrollPositionX, self._scrollPositionY))
-    ease = ease or MOAIEaseType.SOFT_EASE_IN
     newX = newX or self._scrollPositionX
     newY = newY or self._scrollPositionY
+    time = time or (1 / 6 + 1 / 600 * math.distance(newX, newY, self._scrollPositionX, self._scrollPositionY))
+    ease = ease or MOAIEaseType.SOFT_EASE_IN
     if self._curScrollThread then
         self._curScrollThread:stop()
         self._curScrollThread = nil

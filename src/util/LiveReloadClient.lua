@@ -9,23 +9,6 @@ local SceneMgr = require("core.SceneMgr")
 local Runtime = require("core.Runtime")
 local Scene = require("core.Scene")
 
-if MOAIEnvironment.documentDirectory then
-    package.path = MOAIEnvironment.documentDirectory .. '/live_update/?.lua;' .. package.path
-
-    -- resource directories are sorted in descending order by scale threshold 
-    -- here we increase threshold slightly to force lookup of live_update assets before the main assets
-    local newResources = {}
-    for k, v in pairs(ResourceMgr.resourceDirectories) do
-        local path = MOAIEnvironment.documentDirectory .. "/live_update/" .. v.path 
-        newResources[#newResources+1] = {path, v.scale, v.threshold + 0.001}
-    end
-
-    for k, v in pairs(newResources) do
-        ResourceMgr:addResourceDirectory(unpack(v))
-    end
-end
-
-
 local socket = require "socket"
 local ltn12 = require "ltn12"
 local PORT = 8970
@@ -38,6 +21,8 @@ local RESTART = MAGIC_HEADER.."RESTART"
 
 local IMAGE_EXTENSIONS = {[".jpg"] = true, [".png"] = true}
 local LUA_EXTENSIONS = {[".lua"] = true}
+
+local LIVE_UPDATE_PATH = string.pathJoin(MOAIEnvironment.documentDirectory, "live_update")
 
 local function try(func)
     return xpcall(func, 
@@ -90,11 +75,6 @@ local function updateFile(relPath)
     end
 end
 
-local function getPath(str,sep)
-    sep = sep or'/'
-    return str:match(".*"..sep)
-end
-
 local M = {}
 
 local function runnerFunc()
@@ -116,8 +96,8 @@ local function runnerFunc()
                 local dataSock = assert(socket.tcp())
                 assert(dataSock:connect(ip, tonumber(dataPort)))
                 local source = socket.source("until-closed", dataSock)
-                MOAIFileSystem.affirmPath(MOAIEnvironment.documentDirectory .. "/live_update/" .. (getPath(localPath) or ""))
-                local archivePath = MOAIEnvironment.documentDirectory.."/live_update/" .. localPath
+                local archivePath = string.pathJoin(LIVE_UPDATE_PATH, localPath)
+                MOAIFileSystem.affirmPath(string.pathDir(archivePath))
                 local file = assert(io.open(archivePath, "wb"))
                 local sink = ltn12.sink.file(file)
                 while ltn12.pump.step(source, sink) do
@@ -135,7 +115,29 @@ local function runnerFunc()
     sock:close()
 end
 
-function M:init()
+---
+-- @param table sourcePath Custom src path
+function M:init(sourcePath)
+    if MOAIEnvironment.documentDirectory then
+        local paths = ""
+        for i, v in ipairs(sourcePath) do
+            paths = paths .. string.pathJoin(LIVE_UPDATE_PATH, v) .. ';'
+        end
+        package.path = paths .. package.path
+
+        -- resource directories are sorted in descending order by scale threshold 
+        -- here we increase threshold slightly to force lookup of live_update assets before the main assets
+        local newResources = {}
+        for k, v in pairs(ResourceMgr.resourceDirectories) do
+            local path = string.pathJoin(LIVE_UPDATE_PATH, v.path) 
+            newResources[#newResources+1] = {path, v.scale, v.threshold + 0.001}
+        end
+
+        for k, v in pairs(newResources) do
+            ResourceMgr:addResourceDirectory(unpack(v))
+        end
+    end
+
     local function onSessionEnd()
         self:stop()
     end

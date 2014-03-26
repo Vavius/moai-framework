@@ -189,7 +189,7 @@ class LayoutParser(object):
             'alignment' : alignmentTypes[obj['alignment']],
             'loc' : makeLoc(x, y),
             'width' : width,
-            'height' : height,
+            'height' : height + 0.5 * obj['fontSize'] * ry,
             'color' : makeColor(r, g, b, a),
         }
 

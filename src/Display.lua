@@ -77,7 +77,7 @@ function Display.TextBox(str, width, height, fontName, fontSize, color)
     local properties
     if type(str) == 'table' then
         properties = str
-        str = properties['string']
+        str = properties['string'] or ""
         width = properties['width']
         height = properties['height']
         fontName = properties['fontName']
