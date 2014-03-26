@@ -36,9 +36,9 @@ end
 -- If reloaded file is currently running scene - then restart it
 -- Files with scenes determined by their directory
 local function restartScene(requirePath)
-    -- if SceneMgr.currentScene.name == requirePath then
+    -- remove current scene from cache, so it can be reloaded
+    package.loaded[SceneMgr.currentScene.name] = nil
     try(function() SceneMgr:replaceScene(SceneMgr.currentScene.name) end)
-    -- end
 end
 
 ---

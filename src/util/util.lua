@@ -150,7 +150,7 @@ function string.endswith(s, send)
 end
 
 function string.pathDir(path)
-    return str:match(".*" .. DEFAULT_SEP)
+    return path:match(".*" .. DEFAULT_SEP)
 end
 
 local function join(leading, trailing)
