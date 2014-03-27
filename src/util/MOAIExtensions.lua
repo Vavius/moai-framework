@@ -38,6 +38,20 @@ local function initPropInterface ( interface, superInterface )
         self.scissorRect = scissorRect
         superInterface.setScissorRect ( self, scissorRect )
     end
+
+    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    function interface.setColor ( self, r, g, b, a )
+        self.color = { r, g, b, a }
+        superInterface.setColor ( self, r, g, b, a )
+    end
+
+    -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    function interface.getColor ( self )
+        if self.color then
+            return unpack(self.color)
+        end
+        return 1, 1, 1, 1
+    end
 end
 
 

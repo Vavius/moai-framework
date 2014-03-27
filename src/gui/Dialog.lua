@@ -4,40 +4,41 @@
 -- 
 --------------------------------------------------------------------------------
 
-local Layer = require("core.Layer")
+local Scene = require("core.Scene")
 local Event = require("core.Event")
 local Executors = require("core.Executors")
 local UIEvent = require("gui.UIEvent")
 local InputMgr = require("core.InputMgr")
 local DialogAnimations = require("gui.DialogAnimations")
 
-local Dialog = class(Layer)
+local Dialog = class(Scene)
+Dialog.isOverlay = true
 
 ---
 -- 
 -- 
-function Dialog:init(scene, modal)
-    Layer.init(self)
-    assert(scene, "Dialog scene not specified")
+function Dialog:init(params)
+    Scene.init(self, params)
 
-    self.scene = scene
-    self.modal = modal
+    self.openAnimation = params.openAnimation
+    self.closeAnimation = params.closeAnimation
+    self.modal = params.modal
 end
 
 ---
--- 
--- 
-function Dialog:open(animation)
-    self.scene:addLayer(self)
+-- Open dialog. It will be rendered as overlay
+-- @param table params  {animation = "string"}
+function Dialog:open(params)
+    local animation = params.animation or self.openAnimation
 
     local onTransitionFinished = function()
         if self.modal then
-            InputMgr:setFocusLayer(self)
+            SceneMgr:setFocus(self)
         end
-        self:dispatchEvent(UIEvent.DIALOG_OPEN)
+        self:dispatchEvent(Event.ENTER)
     end
 
-    if type(animation) then
+    if type(animation) == "string" then
         animation = DialogAnimations[animation]()
     end
 
@@ -51,23 +52,29 @@ function Dialog:open(animation)
     else
         onTransitionFinished()
     end
-    self:dispatchEvent(UIEvent.DIALOG_WILL_OPEN)
+    
+    SceneMgr:addOverlay(self)
+    Scene.open(self, params)
+    Scene.start(self, params)
+    self:dispatchEvent(Event.WILL_ENTER)
 end
 
-
 ---
--- 
--- 
-function Dialog:close(animation)
+-- Close dialog
+-- @param table params  {animation = "string"}
+function Dialog:close(params)
+    local animation = params.animation or self.closeAnimation
+
     local onTransitionFinished = function()
         if self.modal then
-            InputMgr:setFocusLayer(self)
+            SceneMgr:removeFocus(self)
         end
-        self.scene:removeLayer(self)
-        self:dispatchEvent(UIEvent.DIALOG_DID_CLOSE)
+        SceneMgr:removeDialog(self)
+        self:dispatchEvent(Event.DID_EXIT)
+        SceneMgr:removeOverlay(self)
     end
-
-    if type(animation) then
+    
+    if type(animation) == "string" then
         animation = DialogAnimations[animation]()
     end
 
@@ -81,7 +88,9 @@ function Dialog:close(animation)
     else
         onTransitionFinished()
     end
-    self:dispatchEvent(UIEvent.DIALOG_CLOSE)
+
+    Scene.close(self, params)
+    self:dispatchEvent(Event.EXIT)
 end
 
 

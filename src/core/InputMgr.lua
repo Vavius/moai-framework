@@ -90,13 +90,6 @@ function InputMgr:initialize()
 end
 
 ---
--- Set layer as focused. Only this layer will receive touch events. 
--- @param layer
-function InputMgr:setFocusLayer(layer)
-    self.focusLayer = layer
-end
-
----
 -- If the user has pressed a key returns true.
 -- @param key Key code
 -- @return true is a key is down.
