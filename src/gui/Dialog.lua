@@ -7,8 +7,8 @@
 local Scene = require("core.Scene")
 local Event = require("core.Event")
 local Executors = require("core.Executors")
-local UIEvent = require("gui.UIEvent")
 local InputMgr = require("core.InputMgr")
+local UIEvent = require("gui.UIEvent")
 local DialogAnimations = require("gui.DialogAnimations")
 
 local Dialog = class(Scene)
@@ -20,16 +20,16 @@ Dialog.isOverlay = true
 function Dialog:init(params)
     Scene.init(self, params)
 
-    self.openAnimation = params.openAnimation
-    self.closeAnimation = params.closeAnimation
-    self.modal = params.modal
+    self.openAnimation = DialogAnimations["fadeScaleIn"] { ease = MOAIEaseType.BACK_EASE_IN }
+    self.closeAnimation = DialogAnimations["fadeScaleOut"] { ease = MOAIEaseType.BACK_EASE_OUT, scale = {1.5, 1.5} }
+    self.modal = true
 end
 
 ---
 -- Open dialog. It will be rendered as overlay
 -- @param table params  {animation = "string"}
 function Dialog:open(params)
-    local animation = params.animation or self.openAnimation
+    local animation = params and params.animation or self.openAnimation
 
     local onTransitionFinished = function()
         if self.modal then
@@ -63,13 +63,13 @@ end
 -- Close dialog
 -- @param table params  {animation = "string"}
 function Dialog:close(params)
-    local animation = params.animation or self.closeAnimation
+    local animation = params and params.animation or self.closeAnimation
 
     local onTransitionFinished = function()
         if self.modal then
             SceneMgr:removeFocus(self)
         end
-        SceneMgr:removeDialog(self)
+
         self:dispatchEvent(Event.DID_EXIT)
         SceneMgr:removeOverlay(self)
     end

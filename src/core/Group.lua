@@ -170,7 +170,7 @@ function Group:forEach(func, recursive)
     for i, child in ipairs(self.children) do
         func(child)
         if recursive and child.forEach then
-            child.forEach(func, recursive)
+            child.forEach(child, func, recursive)
         end
     end
 end
