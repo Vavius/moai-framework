@@ -41,7 +41,7 @@ function DialogAnimations.fadeScaleOut(params)
         local scaleX = params.scale and params.scale[1] or 0.5
         local scaleY = params.scale and params.scale[2] or 0.5
 
-        local action1 = group:seekColor(0, 0, 0, 0, time, ease)
+        local action1 = group:seekColor(0, 0, 0, 0, time, MOAIEaseType.EASE_OUT)
         local action2 = group:seekScl(scaleX, scaleY, 1, time, ease)
         MOAICoroutine.blockOnAction(action1)
 

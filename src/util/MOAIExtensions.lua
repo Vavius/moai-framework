@@ -76,12 +76,14 @@ MOAIProp.extend (
 
             if self.layer then
                 self.layer:removeProp ( self )
+                superInterface.clearAttrLink ( self, MOAIProp.ATTR_SHADER )
             end
 
             self.layer = layer
 
             if self.layer then
                 layer:insertProp ( self )
+                superInterface.setAttrLink ( self, MOAIProp.ATTR_SHADER, layer, MOAIProp.ATTR_SHADER )
             end
         end
 
@@ -148,12 +150,14 @@ MOAITextBox.extend (
 
             if self.layer then
                 self.layer:removeProp ( self )
+                superInterface.clearAttrLink ( self, MOAIProp.ATTR_SHADER )
             end
 
             self.layer = layer
 
             if self.layer then
                 layer:insertProp ( self )
+                superInterface.setAttrLink ( self, MOAIProp.ATTR_SHADER, layer, MOAIProp.ATTR_SHADER )
             end
         end
     end
