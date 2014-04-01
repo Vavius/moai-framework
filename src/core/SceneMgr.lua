@@ -15,6 +15,7 @@ local EventDispatcher   = require("core.EventDispatcher")
 local Executors         = require("core.Executors")
 local Scene             = require("core.Scene")
 local SceneTransitions  = require("core.SceneTransitions")
+local ShaderCache       = require("core.ShaderCache")
 
 SceneMgr.scenes = {}
 SceneMgr.renderTable = {}
@@ -25,6 +26,9 @@ SceneMgr.closingSceneSize = nil
 SceneMgr.closingSceneGroup = nil
 SceneMgr.transitioning = false
 
+-- Effects
+SceneMgr.DESATURATE = "desaturate"
+SceneMgr.DARKEN = "darken"
 
 --------------------------------------------------------------------------------
 ---
@@ -39,6 +43,8 @@ function SceneMgr:initialize()
     RenderMgr:addChild(self.renderTable)
 
     self.focus = {}
+    self.effectStack = {}
+    self.overlayCount = 0
 end
 
 ---
@@ -87,6 +93,7 @@ end
 function SceneMgr:addOverlay(scene)
     self:addScene(scene)
     self:addSceneToRenderTable(scene, true)
+    self.overlayCount = self.overlayCount + 1
 end
 
 ---
@@ -95,6 +102,51 @@ end
 function SceneMgr:removeOverlay(scene)
     self:removeScene(scene)
     self:removeSceneFromRenderTable(scene)
+    self.overlayCount = self.overlayCount - 1
+end
+
+---
+-- 
+-- @param string effectType
+function SceneMgr:darkenCurrentScene(effectType)
+    local effectType = effectType or SceneMgr.DESATURATE
+    
+    if not table.includes(self.effectStack, effectType) then
+        if effectType == SceneMgr.DESATURATE then
+            local desaturate = ShaderCache.desaturate
+            local scene = self.currentScene
+            for i, layer in ipairs(scene.layers) do
+                layer:setShader(desaturate)
+            end
+
+            desaturate:setSaturation(1)
+            desaturate:moveSaturation(-0.8, 1)
+        elseif effectType == SceneMgr.DARKEN then
+
+        end
+    end
+    table.push(self.effectStack, effectType)
+end
+
+---
+--
+function SceneMgr:lightenCurrentScene()
+    local effectType = table.pop(self.effectStack)
+
+    if not table.includes(self.effectStack, effectType) then
+        if effectType == SceneMgr.DESATURATE then
+            Executors.callOnce(function()
+                local desaturate = ShaderCache.desaturate
+                local scene = SceneMgr.currentScene
+                MOAICoroutine.blockOnAction(desaturate:moveSaturation(0.8, 0.3))
+                for i, layer in ipairs(scene.layers) do
+                    layer:setShader(nil)
+                end
+            end)
+        elseif effectType == SceneMgr.DARKEN then
+
+        end
+    end
 end
 
 ---
@@ -246,17 +298,12 @@ function SceneMgr:addSceneToRenderTable(scene, overlay)
     if table.includes(self.renderTable, scene) then
         return
     end
-
-    if not overlay then
-        for i, v in ipairs(self.renderTable) do
-            if v.isOverlay then
-                table.insert(self.renderTable, i, scene)
-                return
-            end
-        end
+    
+    if overlay then
+        table.insert(self.renderTable, scene.layers)
+    else
+        table.insert(self.renderTable, #self.renderTable + 1 - self.overlayCount, scene.layers)
     end
-
-    table.insert(self.renderTable, scene.layers)
 end
 
 function SceneMgr:removeSceneFromRenderTable(scene)

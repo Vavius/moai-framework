@@ -10,7 +10,6 @@ local Executors = require("core.Executors")
 local InputMgr = require("core.InputMgr")
 local UIEvent = require("gui.UIEvent")
 local DialogAnimations = require("gui.DialogAnimations")
-local ShaderCache = require("core.ShaderCache")
 
 local Dialog = class(Scene)
 Dialog.isOverlay = true
@@ -52,16 +51,7 @@ function Dialog:open(params)
         end
         )
 
-        if self.desaturate then
-            local desaturate = ShaderCache.desaturate
-            local scene = SceneMgr.currentScene
-            for i, layer in ipairs(scene.layers) do
-                layer:setShader(desaturate)
-            end
-
-            desaturate:setSaturation(1)
-            desaturate:moveSaturation(-0.8, 1)
-        end
+        SceneMgr:darkenCurrentScene(SceneMgr.DESATURATE)
     else
         onTransitionFinished()
     end
@@ -99,16 +89,7 @@ function Dialog:close(params)
         end
         )
 
-        if self.desaturate then
-            Executors.callOnce(function()
-                local desaturate = ShaderCache.desaturate
-                local scene = SceneMgr.currentScene
-                MOAICoroutine.blockOnAction(desaturate:moveSaturation(0.8, 0.3))
-                for i, layer in ipairs(scene.layers) do
-                    layer:setShader(nil)
-                end
-            end)
-        end
+        SceneMgr:lightenCurrentScene()
     else
         onTransitionFinished()
     end
