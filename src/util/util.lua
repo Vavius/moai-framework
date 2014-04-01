@@ -128,6 +128,19 @@ function math.randomInt(lower, upper)
 end
 
 ---
+-- vec with random length and direction
+-- @param minLength     min length
+-- @param maxLength     max lenght
+-- @param minAngle      min angle in radians. min < max
+-- @param maxAngle      max angle in radians. min < max
+-- @return x, y
+function math.randomVec(minLength, maxLength, minAngle, maxAngle)
+    local a = minAngle + math.random() * (maxAngle - minAngle)
+    local l = minLength + math.random() * (maxLength - minLength)
+    return l * math.cos(a), l * math.sin(a)
+end
+
+---
 -- Returns whether a point inside given rect
 function math.inside(x, y, xMin, yMin, xMax, yMax)
     return x > xMin and x < xMax and y > yMin and y < yMax
