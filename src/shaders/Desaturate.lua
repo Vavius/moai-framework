@@ -42,11 +42,12 @@ void main () {
 function Desaturate:init()
     self:reserveUniforms(1)
     self:declareUniform(1, "saturation", MOAIShader.UNIFORM_FLOAT)
+    self:setSaturation(1)
 
     self:setVertexAttribute ( 1, 'position' )
     self:setVertexAttribute ( 2, 'uv' )
     self:setVertexAttribute ( 3, 'color' )
-
+    
     self:load(vsh, fsh)
 end
 
@@ -56,6 +57,11 @@ end
 
 function Desaturate:moveSaturation(value, time, ease)
     return self:moveAttr(1, value, time, ease)
+end
+
+function Desaturate:getSaturation()
+    print("getAttr", self:getAttr(1))
+    return self:getAttr(1)
 end
 
 return Desaturate

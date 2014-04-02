@@ -30,6 +30,8 @@ SceneMgr.transitioning = false
 SceneMgr.DESATURATE = "desaturate"
 SceneMgr.DARKEN = "darken"
 
+local MIN_SATURATION = 0.2
+
 --------------------------------------------------------------------------------
 ---
 -- Initialize the SceneMgr
@@ -45,6 +47,12 @@ function SceneMgr:initialize()
     self.focus = {}
     self.effectStack = {}
     self.overlayCount = 0
+
+    -- precreate threads to lower garbage generation
+    self.effectActions = {
+        [SceneMgr.DESATURATE] = MOAICoroutine.new(),
+        [SceneMgr.DARKEN] = MOAICoroutine.new(),
+    }
 end
 
 ---
@@ -119,8 +127,11 @@ function SceneMgr:darkenCurrentScene(effectType)
                 layer:setShader(desaturate)
             end
 
-            desaturate:setSaturation(1)
-            desaturate:moveSaturation(-0.8, 1)
+            local effectThread = self.effectActions[effectType]
+            local curSaturation = desaturate:getSaturation()
+            effectThread:run(function()
+                MOAICoroutine.blockOnAction(desaturate:moveSaturation(0.2 - curSaturation, 1))
+            end)
         elseif effectType == SceneMgr.DARKEN then
 
         end
@@ -132,13 +143,16 @@ end
 --
 function SceneMgr:lightenCurrentScene()
     local effectType = table.pop(self.effectStack)
-
+    
     if not table.includes(self.effectStack, effectType) then
         if effectType == SceneMgr.DESATURATE then
-            Executors.callOnce(function()
+            local effectThread = self.effectActions[effectType]
+            effectThread:run(function()
                 local desaturate = ShaderCache.desaturate
-                local scene = SceneMgr.currentScene
-                MOAICoroutine.blockOnAction(desaturate:moveSaturation(0.8, 0.3))
+                local scene = self.currentScene
+                local curSaturation = desaturate:getSaturation()
+                MOAICoroutine.blockOnAction(desaturate:moveSaturation(1 - curSaturation, 0.3))
+                desaturate:setSaturation(1)
                 for i, layer in ipairs(scene.layers) do
                     layer:setShader(nil)
                 end
