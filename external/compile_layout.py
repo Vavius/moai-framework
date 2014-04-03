@@ -157,9 +157,10 @@ class LayoutParser(object):
         self.offsetX = self.offsetX + x
         self.offsetY = self.offsetY + y
 
-        for child in obj['children']:
+        # reverse order in group (illustrator exports different ordering in layers and groups)
+        for child in obj['children'][::-1]:
             children = children + self.makeObject(child) + ','
-            if child != obj['children'][-1]:
+            if child != obj['children'][0]:
                 children = children + '\n'
 
         self.indentLevel = initialIndent

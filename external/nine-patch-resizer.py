@@ -2,20 +2,20 @@
 
 import sys, os, argparse
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 def extractBorder(image):
-
+    
     pass
 
 
 def applyBorder(image, border):
-
+    
     pass
 
 
 def applyScale(image, scale):
-
+    
     pass
 
 
