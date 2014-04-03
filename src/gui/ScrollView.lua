@@ -13,6 +13,15 @@ local UIObjectBase = require("gui.UIObjectBase")
 local InputMgr = require("core.InputMgr")
 local math = math
 
+local abs = math.abs
+local max = math.max
+local min = math.min
+local atan = math.atan
+local ceil = math.ceil
+local clamp = math.clamp
+local round = math.round
+local distance = math.distance
+
 --------------------------------------------------------------------------------
 -- forward declarations
 --------------------------------------------------------------------------------
@@ -140,7 +149,6 @@ function CircularArray:average()
     end
 end
 
-local atan = math.atan
 local function attenuation(distance)
     return 4 * atan(0.25 * distance) / distance
     -- distance = distance < 1 and 1 or math.pow(distance/2, 0.667)
@@ -338,8 +346,8 @@ function ScrollView:onTouchMove(e)
     self._lastTouchY = e.wy
 
     if not self._trackingTouch and 
-    (self.xScrollEnabled and math.abs(e.wx - self._initialLocX) > self.touchDistanceToSlide or
-     self.yScrollEnabled and math.abs(e.wy - self._initialLocY) > self.touchDistanceToSlide) then
+    (self.xScrollEnabled and abs(e.wx - self._initialLocX) > self.touchDistanceToSlide or
+     self.yScrollEnabled and abs(e.wy - self._initialLocY) > self.touchDistanceToSlide) then
         self._trackingTouch = true
         scrollEventData.x = self._scrollPositionX
         scrollEventData.y = self._scrollPositionY
@@ -405,6 +413,14 @@ function ScrollView:checkBounds(dx, dy)
     local xMin, yMin, zMin, xMax, yMax, zMax = self:getBounds()
     local xMinContent, yMinContent, xMaxContent, yMaxContent = unpack(self.contentRect)
 
+    -- this prevents scrolling when content area is smaller than scroll view size
+    if xMaxContent - xMinContent < xMax - xMin then
+        xMinContent = xMaxContent - xMax + xMin
+    end
+    if yMaxContent - yMinContent < yMax - yMin then
+        yMinContent = yMaxContent - yMax + yMin
+    end
+
     local xOffset, yOffset = 0, 0
     if newX + xMax > xMaxContent then
         xOffset = newX + xMax - xMaxContent
@@ -426,10 +442,10 @@ end
 function ScrollView:applyOffset(dx, dy)
     local xOk, yOk, xOffset, yOffset = self:checkBounds(dx, dy)
     if self._touchIdx and not xOk then 
-        dx = self.rubberEffect and attenuation(math.abs(xOffset)) * dx or (dx + xOffset)
+        dx = self.rubberEffect and attenuation(abs(xOffset)) * dx or (dx + xOffset)
     end
     if self._touchIdx and not yOk then 
-        dy = self.rubberEffect and attenuation(math.abs(yOffset)) * dy or (dy + yOffset)
+        dy = self.rubberEffect and attenuation(abs(yOffset)) * dy or (dy + yOffset)
     end
 
     if self.xScrollEnabled then
@@ -458,7 +474,7 @@ animCurveY:reserveKeys(2)
 function ScrollView:scrollToPosition(newX, newY, time, ease)
     newX = newX or self._scrollPositionX
     newY = newY or self._scrollPositionY
-    time = time or (1 / 6 + 1 / 600 * math.distance(newX, newY, self._scrollPositionX, self._scrollPositionY))
+    time = time or (1 / 6 + 1 / 600 * distance(newX, newY, self._scrollPositionX, self._scrollPositionY))
     ease = ease or MOAIEaseType.SOFT_EASE_IN
     if self._curScrollThread then
         self._curScrollThread:stop()
@@ -475,7 +491,7 @@ function ScrollView:scrollToPosition(newX, newY, time, ease)
         return
     end
 
-    local animLength = math.ceil(MOAISim.timeToFrames(time))
+    local animLength = ceil(MOAISim.timeToFrames(time))
     animCurveX:setKey(1, 0, self._scrollPositionX, ease)
     animCurveX:setKey(2, animLength, newX)
 
@@ -507,8 +523,8 @@ end
 
 function ScrollView:startKineticScroll()
     local velX, velY = self._velocityAccumulator:average()
-    self._currentVelocityX = math.clamp(velX, -self.maxVelocity, self.maxVelocity)
-    self._currentVelocityY = math.clamp(velY, -self.maxVelocity, self.maxVelocity)
+    self._currentVelocityX = clamp(velX, -self.maxVelocity, self.maxVelocity)
+    self._currentVelocityY = clamp(velY, -self.maxVelocity, self.maxVelocity)
     if self._curScrollThread then
         self._curScrollThread:stop()
     end
@@ -518,8 +534,8 @@ function ScrollView:startKineticScroll()
         local dy = self._currentVelocityY
         local xOk, yOk, xOffset, yOffset = self:checkBounds(dx, dy)
         
-        local xReadyToRubber = not self.xScrollEnabled or (math.abs(dx) < self.minVelocity and not xOk)
-        local yReadyToRubber = not self.yScrollEnabled or (math.abs(dy) < self.minVelocity and not yOk)
+        local xReadyToRubber = not self.xScrollEnabled or (abs(dx) < self.minVelocity and not xOk)
+        local yReadyToRubber = not self.yScrollEnabled or (abs(dy) < self.minVelocity and not yOk)
 
         if xReadyToRubber and yReadyToRubber then
             self:startRubberEffect()
@@ -528,11 +544,11 @@ function ScrollView:startKineticScroll()
 
         if self.xScrollEnabled then
             self._currentVelocityX = self.damping * dx
-            if math.abs(self._currentVelocityX) < self.minVelocity then
+            if abs(self._currentVelocityX) < self.minVelocity then
                 return true
             end
             if not xOk then
-                local att = attenuation(math.abs(xOffset))
+                local att = attenuation(abs(xOffset))
                 self._currentVelocityX = self._currentVelocityX * att
                 self._scrollPositionX = self._scrollPositionX + (self.rubberEffect and self._currentVelocityX or (dx + xOffset))
             else
@@ -542,11 +558,11 @@ function ScrollView:startKineticScroll()
 
         if self.yScrollEnabled then
             self._currentVelocityY = self.damping * dy
-            if math.abs(self._currentVelocityY) < self.minVelocity then
+            if abs(self._currentVelocityY) < self.minVelocity then
                 return true
             end
             if not yOk then
-                local att = attenuation(math.abs(yOffset))
+                local att = attenuation(abs(yOffset))
                 self._currentVelocityY = self._currentVelocityY * att
                 self._scrollPositionY = self._scrollPositionY + (self.rubberEffect and self._currentVelocityY or (dy + yOffset))
             else
@@ -573,12 +589,12 @@ function ScrollView:startRubberEffect()
 
     if self.snapDistanceX then
         local velOffset = self._currentVelocityX / (1 - self.damping)
-        x = math.round(x + velOffset - self.snapOffsetX, self.snapDistanceX) + self.snapOffsetX
+        x = round(x + velOffset - self.snapOffsetX, self.snapDistanceX) + self.snapOffsetX
         xOk = false
     end
     if self.snapDistanceY then
         local velOffset = self._currentVelocityY / (1 - self.damping)
-        y = math.round(y + velOffset - self.snapOffsetY, self.snapDistanceY) + self.snapOffsetY
+        y = round(y + velOffset - self.snapOffsetY, self.snapDistanceY) + self.snapOffsetY
         yOk = false
     end
 
