@@ -554,7 +554,6 @@ function ScrollView:startKineticScroll()
             end
         end
         
-        print("update")
         self:updatePosition()
     end)
 end
