@@ -528,9 +528,12 @@ function ScrollView:startKineticScroll()
 
         if self.xScrollEnabled then
             self._currentVelocityX = self.damping * dx
+            if math.abs(self._currentVelocityX) < self.minVelocity then
+                return true
+            end
             if not xOk then
                 local att = attenuation(math.abs(xOffset))
-                self._currentVelocityX = dx * att
+                self._currentVelocityX = self._currentVelocityX * att
                 self._scrollPositionX = self._scrollPositionX + (self.rubberEffect and self._currentVelocityX or (dx + xOffset))
             else
                 self._scrollPositionX = self._scrollPositionX + dx
@@ -539,15 +542,19 @@ function ScrollView:startKineticScroll()
 
         if self.yScrollEnabled then
             self._currentVelocityY = self.damping * dy
+            if math.abs(self._currentVelocityY) < self.minVelocity then
+                return true
+            end
             if not yOk then
                 local att = attenuation(math.abs(yOffset))
-                self._currentVelocityY = dy * att
+                self._currentVelocityY = self._currentVelocityY * att
                 self._scrollPositionY = self._scrollPositionY + (self.rubberEffect and self._currentVelocityY or (dy + yOffset))
             else
                 self._scrollPositionY = self._scrollPositionY + dy
             end
         end
         
+        print("update")
         self:updatePosition()
     end)
 end
