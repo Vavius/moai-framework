@@ -260,7 +260,8 @@ end
 function ResourceMgr:setAtlasForSprite(luaFilePath, spriteFrameName)
     local existing = self.spriteFrameAtlases[spriteFrameName]
 
-    assert(existing == nil or existing == luaFilePath)
+    assert(existing == nil or existing == luaFilePath, 
+        string.format("Duplicate sprite frame name %s in different atlases: %s and %s", spriteFrameName, luaFilePath, existing or ""))
 
     self.spriteFrameAtlases[spriteFrameName] = luaFilePath
 end

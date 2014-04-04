@@ -30,6 +30,10 @@ end
 -- Open dialog. It will be rendered as overlay
 -- @param table params  {animation = "string"}
 function Dialog:open(params)
+    if self.opened then
+        return
+    end
+
     local animation = params and params.animation or self.openAnimation
 
     local onTransitionFinished = function()
@@ -66,6 +70,9 @@ end
 -- Close dialog
 -- @param table params  {animation = "string"}
 function Dialog:close(params)
+    if not self.opened then
+        return
+    end
     local animation = params and params.animation or self.closeAnimation
 
     local onTransitionFinished = function()
