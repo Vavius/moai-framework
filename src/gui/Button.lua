@@ -29,8 +29,9 @@ local Button = class(UIObjectBase, Group)
 
 Button.propertyOrder = {
     size = 2,
-    label = 2,
-    layer = 3,
+    children = 2,
+    label = 3,
+    layer = 4,
 }
 
 function Button:init(params)
