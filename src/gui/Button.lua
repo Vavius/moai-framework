@@ -34,6 +34,16 @@ Button.propertyOrder = {
     layer = 4,
 }
 
+
+---
+-- 
+-- Button.FORCE_MIN_SIZE = true
+-- Button.MIN_SIZE = {
+--     163
+
+-- }
+
+
 function Button:init(params)
     Group.init(self)
     UIObjectBase.init(self, params)
