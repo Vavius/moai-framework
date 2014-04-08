@@ -118,13 +118,17 @@ function Button:setHitArea(width, height, xMax, yMax)
     xMax = xMax or 0.5 * width
     yMax = yMax or 0.5 * height
 
-    self:setBounds(xMin, yMin, xMax, yMax)
+    self:setBounds(xMin, yMin, 0, xMax, yMax, 0)
     if self.normalSprite then
         self.normalSprite:setBounds(xMin, yMin, 0, xMax, yMax, 0)
     end
 
     if self.activeSprite then
         self.activeSprite:setBounds(xMin, yMin, 0, xMax, yMax, 0)
+    end
+
+    if self.disabledSprite then
+        self.disabledSprite:setBounds(xMin, yMin, 0, xMax, yMax, 0)
     end
 end
 
