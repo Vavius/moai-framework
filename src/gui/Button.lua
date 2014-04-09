@@ -69,7 +69,7 @@ function Button:init(params)
     self:setActive(false)
 
     if Button.FORCE_MIN_SIZE and not params.hitArea then
-        local w, h = self:getDims()
+        local w, h = self.normalSprite:getDims()
         local min = Button.MIN_SIZE / App:getContentScale()
         self:setHitArea(math.max(w, min), math.max(h, min))
     end
