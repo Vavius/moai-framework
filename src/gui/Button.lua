@@ -36,12 +36,22 @@ Button.propertyOrder = {
 
 
 ---
--- 
--- Button.FORCE_MIN_SIZE = true
--- Button.MIN_SIZE = {
---     163
+-- Bounds padding for hit test when moving touch out of the button
+Button.HIT_TEST_PADDING = 30
 
--- }
+
+---
+-- Force minimal hitArea size for button according to Apple Human Interface Guidelines
+-- Guide says that buttons are comfortable at 44x44 size in points 
+-- (points are pixels on non-retina devices)
+-- 
+-- We will use device DPI to convert points to our screen space coordinates:
+-- 44 points is 0.27 inches (44 / 163)
+-- min button size: (0.27 * DPI) / contentScale
+if MOAIEnvironment.screenDpi then
+    Button.FORCE_MIN_SIZE = true
+    Button.MIN_SIZE = math.ceil(0.27 * MOAIEnvironment.screenDpi)
+end
 
 
 function Button:init(params)
@@ -57,6 +67,12 @@ function Button:init(params)
     self:initEventListeners()
     self:setEnabled(true)
     self:setActive(false)
+
+    if Button.FORCE_MIN_SIZE and not params.hitArea then
+        local w, h = self:getDims()
+        local min = Button.MIN_SIZE / App:getContentScale()
+        self:setHitArea(math.max(w, min), math.max(h, min))
+    end
 end
 
 
@@ -260,7 +276,7 @@ function Button:onTouchMove(event)
         return
     end
     
-    local inside = self.normalSprite:inside(event.wx, event.wy, 0)
+    local inside = self.normalSprite:inside(event.wx, event.wy, 0, Button.HIT_TEST_PADDING)
     if inside ~= self.active then
         self:setActive(inside)
     end
@@ -282,7 +298,7 @@ function Button:onTouchUp(event)
     self._touchDownIdx = nil
     self:setActive(false)
 
-    if not self.normalSprite:inside(event.wx, event.wy, 0) then
+    if not self.normalSprite:inside(event.wx, event.wy, 0, Button.HIT_TEST_PADDING) then
         return
     end
 
