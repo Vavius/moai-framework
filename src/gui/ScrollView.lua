@@ -509,8 +509,8 @@ function ScrollView:scrollToPosition(newX, newY, time, ease, unbounded)
                 self._scrollPositionY = animCurveY:getValueAtTime(f)
                 if not unbounded then
                     local yOk, xOk, offsetX, offsetY = self:checkBounds()
-                    self._scrollPositionX = newX + offsetX
-                    self._scrollPositionY = newY + offsetY
+                    self._scrollPositionX = self._scrollPositionX + offsetX
+                    self._scrollPositionY = self._scrollPositionY + offsetY
                 end
                 self:updatePosition()
                 coroutine.yield()
