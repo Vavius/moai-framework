@@ -24,6 +24,7 @@ function Dialog:init(params)
     self.closeAnimation = DialogAnimations["fadeScaleOut"] { ease = MOAIEaseType.BACK_EASE_OUT, scale = {1.5, 1.5} }
     self.modal = true
     self.desaturate = true
+    self.animThread = MOAICoroutine.new()
 end
 
 ---
@@ -48,12 +49,10 @@ function Dialog:open(params)
     end
 
     if animation then
-        Executors.callOnce(
-        function()
+        self.animThread:run(function()
             animation(self)
             onTransitionFinished()
-        end
-        )
+        end)
 
         SceneMgr:darkenCurrentScene(SceneMgr.DESATURATE)
     else
@@ -89,12 +88,10 @@ function Dialog:close(params)
     end
 
     if animation then
-        Executors.callOnce(
-        function()
+        self.animThread:run(function()
             animation(self)
             onTransitionFinished()
-        end
-        )
+        end)
 
         SceneMgr:lightenCurrentScene()
     else

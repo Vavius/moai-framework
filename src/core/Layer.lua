@@ -35,11 +35,19 @@ function Layer:setTouchEnabled(value)
         return
     end
     self.touchEnabled = value
-    if value  then
+    if value then
         self.touchHandler = self.touchHandler or TouchHandler(self)
     end
 end
 
+
+---
+-- 
+function Layer:cancelTouches()
+    if self.touchHandler and self.touchHandler.cancelTouches then
+        self.touchHandler:cancelTouches()
+    end
+end
 
 ---
 -- Test if prop can receive touch
@@ -72,6 +80,21 @@ function TouchHandler:init(layer)
     layer:addEventListener(Event.TOUCH_UP, self.onTouch, self)
     layer:addEventListener(Event.TOUCH_MOVE, self.onTouch, self)
     layer:addEventListener(Event.TOUCH_CANCEL, self.onTouch, self)
+end
+
+---
+-- Cancel active touches. Useful for cleanup when scene is closed
+function TouchHandler:cancelTouches()
+    for idx, prop in pairs(self.touchProps) do
+        local event = self.TOUCH_EVENT
+        event.type = Event.TOUCH_CANCEL
+        event.idx = idx
+        event.x = 0
+        event.y = 0
+        event.stopFlag = false
+        self:dispatchTouchEvent(event, prop)
+        self.touchProps[idx] = nil
+    end
 end
 
 ---

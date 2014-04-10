@@ -320,7 +320,6 @@ end
 -- 
 function Button:onTouchCancel(event)
     event:stop()
-    
     if self._touchDownIdx ~= event.idx then
         return
     end

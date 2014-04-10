@@ -380,6 +380,7 @@ end
 
 function ScrollView:onTouchCancel(e)
     if self._touchIdx ~= e.idx or self._discardCancelEvent then
+        self._discardCancelEvent = false
         return
     end
 

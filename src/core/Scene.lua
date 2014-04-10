@@ -110,6 +110,10 @@ function Scene:stop(params)
     self.started = false
     self.sceneUpdateEnabled = false
     self.sceneTouchEnabled = false
+
+    for i, layer in ipairs(self.layers) do
+        layer:cancelTouches()
+    end
 end
 
 ---

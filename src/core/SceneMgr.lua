@@ -130,7 +130,7 @@ function SceneMgr:darkenCurrentScene(effectType)
             local effectThread = self.effectActions[effectType]
             local curSaturation = desaturate:getSaturation()
             effectThread:run(function()
-                MOAICoroutine.blockOnAction(desaturate:moveSaturation(0.2 - curSaturation, 0.3))
+                MOAICoroutine.blockOnAction(desaturate:moveSaturation(MIN_SATURATION - curSaturation, 0.3))
             end)
         elseif effectType == SceneMgr.DARKEN then
 
