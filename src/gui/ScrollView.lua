@@ -471,7 +471,7 @@ local animCurveY = MOAIAnimCurve.new()
 animCurveX:reserveKeys(2)
 animCurveY:reserveKeys(2)
 
-function ScrollView:scrollToPosition(newX, newY, time, ease)
+function ScrollView:scrollToPosition(newX, newY, time, ease, unbounded)
     newX = newX or self._scrollPositionX
     newY = newY or self._scrollPositionY
     time = time or (1 / 6 + 1 / 600 * distance(newX, newY, self._scrollPositionX, self._scrollPositionY))
@@ -484,9 +484,11 @@ function ScrollView:scrollToPosition(newX, newY, time, ease)
     if time == 0 then
         self._scrollPositionX = newX
         self._scrollPositionY = newY
-        local yOk, xOk, offsetX, offsetY = self:checkBounds()
-        self._scrollPositionX = newX + offsetX
-        self._scrollPositionY = newY + offsetY
+        if not unbounded then
+            local yOk, xOk, offsetX, offsetY = self:checkBounds()
+            self._scrollPositionX = newX + offsetX
+            self._scrollPositionY = newY + offsetY
+        end
         self:updatePosition()
         return
     end
@@ -505,11 +507,11 @@ function ScrollView:scrollToPosition(newX, newY, time, ease)
             for f = 1, animLength do
                 self._scrollPositionX = animCurveX:getValueAtTime(f)
                 self._scrollPositionY = animCurveY:getValueAtTime(f)
-                
-                yOk, xOk, offsetX, offsetY = self:checkBounds()
-                
-                self._scrollPositionX = self._scrollPositionX + offsetX
-                self._scrollPositionY = self._scrollPositionY + offsetY
+                if not unbounded then
+                    local yOk, xOk, offsetX, offsetY = self:checkBounds()
+                    self._scrollPositionX = newX + offsetX
+                    self._scrollPositionY = newY + offsetY
+                end
                 self:updatePosition()
                 coroutine.yield()
             end
@@ -534,8 +536,8 @@ function ScrollView:startKineticScroll()
         local dy = self._currentVelocityY
         local xOk, yOk, xOffset, yOffset = self:checkBounds(dx, dy)
         
-        local xReadyToRubber = not self.xScrollEnabled or (abs(dx) < self.minVelocity and not xOk)
-        local yReadyToRubber = not self.yScrollEnabled or (abs(dy) < self.minVelocity and not yOk)
+        local xReadyToRubber = not self.xScrollEnabled or (abs(dx) < self.minVelocity)
+        local yReadyToRubber = not self.yScrollEnabled or (abs(dy) < self.minVelocity)
 
         if xReadyToRubber and yReadyToRubber then
             self:startRubberEffect()
@@ -544,9 +546,6 @@ function ScrollView:startKineticScroll()
 
         if self.xScrollEnabled then
             self._currentVelocityX = self.damping * dx
-            if abs(self._currentVelocityX) < self.minVelocity then
-                return true
-            end
             if not xOk then
                 local att = attenuation(abs(xOffset))
                 self._currentVelocityX = self._currentVelocityX * att
@@ -558,9 +557,6 @@ function ScrollView:startKineticScroll()
 
         if self.yScrollEnabled then
             self._currentVelocityY = self.damping * dy
-            if abs(self._currentVelocityY) < self.minVelocity then
-                return true
-            end
             if not yOk then
                 local att = attenuation(abs(yOffset))
                 self._currentVelocityY = self._currentVelocityY * att
@@ -569,7 +565,7 @@ function ScrollView:startKineticScroll()
                 self._scrollPositionY = self._scrollPositionY + dy
             end
         end
-        
+
         self:updatePosition()
     end)
 end
@@ -599,7 +595,7 @@ function ScrollView:startRubberEffect()
     end
 
     if (not xOk and self.xScrollEnabled) or (not yOk and self.yScrollEnabled) then
-        self:scrollToPosition(x, y)
+        self:scrollToPosition(x, y, nil, nil, true)
     end
 end
 
